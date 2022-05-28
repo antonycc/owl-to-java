@@ -137,8 +137,8 @@ private val logger = KotlinLogging.logger {}
 
 internal class GenerateJavaSourceTest {
 
-    private val owlFilePath = "./src/test/resources/schemaorg-skeleton.owl"
-    private val javaSourceDirectoryPath = "./build/generated-sources"
+    private val owlFilePath = ".${File.separator}src${File.separator}test${File.separator}resources${File.separator}schemaorg.owl"
+    private val javaSourceDirectoryPath = ".${File.separator}build${File.separator}generated-sources"
     private val javaBasePackage = "uk.co.polycode"
     private val lang = "en"
     private val classes = listOf(
