@@ -26,7 +26,9 @@ OWL to Java currently:
 * Versioning policy, auto increment
 * @since versioned annotation on tests and auto-generated version history from test annotations
 * Support all classes as the default
-* Inheritance by interface (via Lombok, or better in Kotlin?) and agregation
+* Inheritance by interface (via Lombok, or better in Kotlin?) and aggregation
+* Full fidelity back to source document
+* Change schema.org references to https
 * Handling of plurals as collections e.g. Person.parent is a relationship with multiplicity
 * Peer review
 * Performance tuning
@@ -59,6 +61,11 @@ OWL to Java currently:
 * Release to DockerHub
 * Release to Maven Central
 * Present to the community
+
+# See also
+
+* Class and field definitions are generated based on OWL https://www.w3.org/TR/owl-guide/
+* The ontology from https://schema.org/ is the primary use case for this project.
 
 # Examples:
 
@@ -217,6 +224,8 @@ internal class GenerateJavaSourceTest {
 
 # Licence
 
+## Licence - OWL to Java
+
 OWL to Java is released under the Mozilla Public License, v. 2.0:
 ```java
 /**
@@ -234,7 +243,15 @@ OWL to Java is released under the Mozilla Public License, v. 2.0:
  */
 ```
 
-# See also
+## Licence - Schema.org
 
-* Class and field definitions are generated based on OWL https://www.w3.org/TR/owl-guide/
-* The ontology from https://schema.org/ is the primary use case for this project.
+OWL to Java uses the Schema from Schema.org which is released under the Creative Commons Attribution-ShareAlike License (version 3.0): https://creativecommons.org/licenses/by-sa/3.0/
+Schema.org Version 14.0 is currently used and this can be downloaded from https://schema.org/docs/schemaorg.owl
+( Release archive: https://github.com/schemaorg/schemaorg/tree/main/data/releases/14.0/ )
+The following files are copies of or derivatives of Schema.org schemas:
+```shell
+./src/test/resources/schemaorg.owl - Schema.org Version 14.0: copy of https://schema.org/docs/schemaorg.owl
+./src/test/resources/schemaorg-minimal-person.owl - Schema.org Version 10: Cut down copy orientated aroung Person
+./src/test/resources/schemaorg-skeleton.owl - Schema.org Version 10: Cut down smallest meaningful ontology
+```
+Fragment of these files are referenced in OWL to Java source code and tests

@@ -1,3 +1,15 @@
+package uk.co.polycode.owltojava
+
+import com.squareup.javapoet.*
+import mu.KotlinLogging
+import java.net.URI
+import javax.lang.model.element.Modifier
+
+import uk.co.polycode.owltojava.owl.*
+import uk.co.polycode.owltojava.rdf.*
+
+private val logger = KotlinLogging.logger {}
+
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
  * Copyright (C) 2022  Antony Cartwright, Polycode Limited
@@ -11,21 +23,10 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-package uk.co.polycode.owltojava
-
-import com.squareup.javapoet.*
-import mu.KotlinLogging
-import java.net.URI
-import javax.lang.model.element.Modifier
-
-import uk.co.polycode.owltojava.owl.*
-import uk.co.polycode.owltojava.rdf.*
-
-private val logger = KotlinLogging.logger {}
-
 open class JavaSourceBuilder(
     var lang: String,
     var javaBasePackage: String,
+    var licenceText: String,
     var desiredClasses: List<String>,
     var primitivePropertyTypes: Map<String, String>,
     var ignoredPropertyTypes: List<String>,
@@ -46,6 +47,7 @@ open class JavaSourceBuilder(
             .filter { it.lang == lang }
             .map { it.text }
             .reduce { javadoc, it -> javadoc.plus(it) }
+            .plus("\n\n${licenceText}")
         if (javadocText.isNotBlank()) {
             val javadocTextEscaped = javadocText.replace("\$", "DOLLAR")
             try {

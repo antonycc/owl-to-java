@@ -1,3 +1,12 @@
+package uk.co.polycode.owltojava
+
+import mu.KotlinLogging
+
+import uk.co.polycode.owltojava.owl.*
+import uk.co.polycode.owltojava.rdf.*
+
+private val logger = KotlinLogging.logger {}
+
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
  * Copyright (C) 2022  Antony Cartwright, Polycode Limited
@@ -11,15 +20,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-package uk.co.polycode.owltojava
-
-import mu.KotlinLogging
-
-import uk.co.polycode.owltojava.owl.*
-import uk.co.polycode.owltojava.rdf.*
-
-private val logger = KotlinLogging.logger {}
-
 class OwlParser(
     private val rdfDocument: RdfDocument,
     val lang: String = "en",

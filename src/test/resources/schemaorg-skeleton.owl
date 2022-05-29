@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rdf:RDF xml:base="http://schema.org/" xmlns="http://schema.org/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:schema="http://schema.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+<rdf:RDF xml:base="https://schema.org/" xmlns="https://schema.org/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:schema="https://schema.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
 	<!--
 	Generated from Schema.org version: 10.0 on: 2020-08-25
 	-->
-	<owl:Ontology rdf:about="http://schema.org/">
+	<owl:Ontology rdf:about="https://schema.org/">
 		<owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">10.0</owl:versionInfo>
 		<rdfs:label>Schema.org Vocabulary</rdfs:label>
 		<dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dat">2020-08-25</dcterms:modified>
@@ -19,49 +19,49 @@
 	/ Class Definitions
 	/////////////////////
 	-->
-	<owl:Class rdf:about="http://schema.org/Thing">
+	<owl:Class rdf:about="https://schema.org/Thing">
 		<rdfs:label xml:lang="en">Thing</rdfs:label>
 		<rdfs:comment xml:lang="en">The most generic type of item.</rdfs:comment>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Thing"/>
 	</owl:Class>
-	<owl:Class rdf:about="http://schema.org/Person">
+	<owl:Class rdf:about="https://schema.org/Person">
 		<rdfs:label xml:lang="en">Person</rdfs:label>
-		<rdfs:subClassOf rdf:resource="http://schema.org/Thing"/>
+		<rdfs:subClassOf rdf:resource="https://schema.org/Thing"/>
 		<rdfs:comment xml:lang="en">A person (alive, dead, undead, or fictional).</rdfs:comment>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Person"/>
 	</owl:Class>
-	<owl:Class rdf:about="http://schema.org/Place">
-		<rdfs:subClassOf rdf:resource="http://schema.org/Thing"/>
+	<owl:Class rdf:about="https://schema.org/Place">
+		<rdfs:subClassOf rdf:resource="https://schema.org/Thing"/>
 		<rdfs:label xml:lang="en">Place</rdfs:label>
 		<rdfs:comment xml:lang="en">Entities that have a somewhat fixed, physical extension.</rdfs:comment>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Place"/>
 	</owl:Class>
-	<owl:Class rdf:about="http://schema.org/Boolean">
+	<owl:Class rdf:about="https://schema.org/Boolean">
 		<rdfs:label xml:lang="en">Boolean</rdfs:label>
 		<rdfs:comment xml:lang="en">Boolean: True or False.</rdfs:comment>
-		<rdfs:subClassOf rdf:resource="http://schema.org/DataType"/>
+		<rdfs:subClassOf rdf:resource="https://schema.org/DataType"/>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Boolean"/>
 	</owl:Class>
-	<owl:Class rdf:about="http://schema.org/DataType">
+	<owl:Class rdf:about="https://schema.org/DataType">
 		<rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
 		<rdfs:comment xml:lang="en">The basic data types such as Integers, Strings, etc.</rdfs:comment>
 		<rdfs:label xml:lang="en">DataType</rdfs:label>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/DataType"/>
 	</owl:Class>
-	<owl:Class rdf:about="http://schema.org/Date">
+	<owl:Class rdf:about="https://schema.org/Date">
 		<rdfs:comment xml:lang="en">A date value in &lt;a href=&quot;http://en.wikipedia.org/wiki/ISO_8601&quot;&gt;ISO 8601 date format&lt;/a&gt;.</rdfs:comment>
-		<rdfs:subClassOf rdf:resource="http://schema.org/DataType"/>
+		<rdfs:subClassOf rdf:resource="https://schema.org/DataType"/>
 		<rdfs:label xml:lang="en">Date</rdfs:label>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Date"/>
 	</owl:Class>
-	<owl:Class rdf:about="http://schema.org/DateTime">
-		<rdfs:subClassOf rdf:resource="http://schema.org/DataType"/>
+	<owl:Class rdf:about="https://schema.org/DateTime">
+		<rdfs:subClassOf rdf:resource="https://schema.org/DataType"/>
 		<rdfs:label xml:lang="en">DateTime</rdfs:label>
 		<rdfs:comment xml:lang="en">A combination of date and time of day in the form [-]CCYY-MM-DDThh:mm:ss[Z|(+|-)hh:mm] (see Chapter 5.4 of ISO 8601).</rdfs:comment>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/DateTime"/>
 	</owl:Class>
-	<owl:Class rdf:about="http://schema.org/Number">
-		<rdfs:subClassOf rdf:resource="http://schema.org/DataType"/>
+	<owl:Class rdf:about="https://schema.org/Number">
+		<rdfs:subClassOf rdf:resource="https://schema.org/DataType"/>
 		<rdfs:comment xml:lang="en">Data type: Number.&lt;br/&gt;&lt;br/&gt;
 
 			Usage guidelines:&lt;br/&gt;&lt;br/&gt;
@@ -74,21 +74,21 @@
 		<rdfs:label xml:lang="en">Number</rdfs:label>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Number"/>
 	</owl:Class>
-	<owl:Class rdf:about="http://schema.org/Text">
-		<rdfs:subClassOf rdf:resource="http://schema.org/DataType"/>
+	<owl:Class rdf:about="https://schema.org/Text">
+		<rdfs:subClassOf rdf:resource="https://schema.org/DataType"/>
 		<rdfs:comment xml:lang="en">Data type: Text.</rdfs:comment>
 		<rdfs:label xml:lang="en">Text</rdfs:label>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Text"/>
 	</owl:Class>
-	<owl:Class rdf:about="http://schema.org/Time">
+	<owl:Class rdf:about="https://schema.org/Time">
 		<rdfs:comment xml:lang="en">A point in time recurring on multiple days in the form hh:mm:ss[Z|(+|-)hh:mm] (see &lt;a href=&quot;http://www.w3.org/TR/xmlschema-2/#time&quot;&gt;XML schema for details&lt;/a&gt;).</rdfs:comment>
-		<rdfs:subClassOf rdf:resource="http://schema.org/DataType"/>
+		<rdfs:subClassOf rdf:resource="https://schema.org/DataType"/>
 		<rdfs:label xml:lang="en">Time</rdfs:label>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Time"/>
 	</owl:Class>
 	<owl:Class rdf:about="http://schema.polycode.co.uk/Value">
 		<rdfs:comment xml:lang="en">Monetary value of this thing.</rdfs:comment>
-		<rdfs:subClassOf rdf:resource="http://schema.org/DataType"/>
+		<rdfs:subClassOf rdf:resource="https://schema.org/DataType"/>
 		<rdfs:label xml:lang="en">Time</rdfs:label>
 		<rdfs:isDefinedBy rdf:resource="http://schema.polycode.co.uk/Value"/>
 	</owl:Class>
@@ -97,23 +97,23 @@
 	/ Property Definitions
 	/////////////////////
 	-->
-	<owl:ObjectProperty rdf:about="http://schema.org/description">
+	<owl:ObjectProperty rdf:about="https://schema.org/description">
 		<rdfs:comment xml:lang="en">A description of the item.</rdfs:comment>
 		<rdfs:label xml:lang="en">description</rdfs:label>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/description"/>
 		<rdfs:domain>
 			<owl:Class>
 				<owl:unionOf rdf:parseType="Collection">
-					<owl:Class rdf:about="http://schema.org/Thing"/>
+					<owl:Class rdf:about="https://schema.org/Thing"/>
 				</owl:unionOf>
 			</owl:Class>
 		</rdfs:domain>
 		<rdfs:range>
 			<owl:Class>
 				<owl:unionOf rdf:parseType="Collection">
-					<owl:Class rdf:about="http://schema.org/Text"/>
-					<owl:Class rdf:about="http://schema.org/URL"/>
-					<owl:Class rdf:about="http://schema.org/Role"/>
+					<owl:Class rdf:about="https://schema.org/Text"/>
+					<owl:Class rdf:about="https://schema.org/URL"/>
+					<owl:Class rdf:about="https://schema.org/Role"/>
 				</owl:unionOf>
 			</owl:Class>
 		</rdfs:range>
@@ -125,21 +125,21 @@
 		<rdfs:domain>
 			<owl:Class>
 				<owl:unionOf rdf:parseType="Collection">
-					<owl:Class rdf:about="http://schema.org/Thing"/>
+					<owl:Class rdf:about="https://schema.org/Thing"/>
 				</owl:unionOf>
 			</owl:Class>
 		</rdfs:domain>
 		<rdfs:range>
 			<owl:Class>
 				<owl:unionOf rdf:parseType="Collection">
-					<owl:Class rdf:about="http://schema.org/Number"/>
-					<owl:Class rdf:about="http://schema.org/URL"/>
-					<owl:Class rdf:about="http://schema.org/Role"/>
+					<owl:Class rdf:about="https://schema.org/Number"/>
+					<owl:Class rdf:about="https://schema.org/URL"/>
+					<owl:Class rdf:about="https://schema.org/Role"/>
 				</owl:unionOf>
 			</owl:Class>
 		</rdfs:range>
 	</owl:ObjectProperty>
-	<owl:DatatypeProperty rdf:about="http://schema.org/maxValue">
+	<owl:DatatypeProperty rdf:about="https://schema.org/maxValue">
 		<rdfs:label xml:lang="en">maxValue</rdfs:label>
 		<rdfs:comment xml:lang="en">The upper value of some characteristic or property.</rdfs:comment>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/maxValue"/>
@@ -147,14 +147,14 @@
 			<owl:Class>
 				<owl:unionOf rdf:parseType="Collection">
 					<owl:Class rdf:about="http://schema.polycode.co.uk/Value"/>
-					<owl:Class rdf:about="http://schema.org/MonetaryAmount"/>
+					<owl:Class rdf:about="https://schema.org/MonetaryAmount"/>
 				</owl:unionOf>
 			</owl:Class>
 		</rdfs:domain>
 		<rdfs:range>
 			<owl:Class>
 				<owl:unionOf rdf:parseType="Collection">
-					<owl:Class rdf:about="http://schema.org/Number"/>
+					<owl:Class rdf:about="https://schema.org/Number"/>
 				</owl:unionOf>
 			</owl:Class>
 		</rdfs:range>

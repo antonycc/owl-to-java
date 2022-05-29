@@ -1,16 +1,3 @@
-/**
- * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
- * Copyright (C) 2022  Antony Cartwright, Polycode Limited
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * Mozilla Public License, v. 2.0 for more details.
- */
 package uk.co.polycode.owltojava
 
 import mu.KotlinLogging
@@ -27,6 +14,19 @@ import uk.co.polycode.owltojava.rdf.*
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
+ * Copyright (C) 2022  Antony Cartwright, Polycode Limited
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * Mozilla Public License, v. 2.0 for more details.
+ */
 abstract class RegenerateOntologyTask : DefaultTask() {
 
     @get:Input
@@ -40,6 +40,9 @@ abstract class RegenerateOntologyTask : DefaultTask() {
 
     @get:Input
     abstract var javaBasePackage: String
+
+    @get:Input
+    abstract var licenceText: String
 
     @get:Input
     abstract var classes: List<String>
@@ -81,6 +84,7 @@ abstract class RegenerateOntologyTask : DefaultTask() {
         val javaSourceBuilder = JavaSourceBuilder(
             lang = lang,
             javaBasePackage = javaBasePackage,
+            licenceText = licenceText,
             desiredClasses = classes,
             primitivePropertyTypes = primativePropertyTypes,
             ignoredPropertyTypes = ignoredPropertyTypes,

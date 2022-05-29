@@ -1,3 +1,8 @@
+package uk.co.polycode.owltojava.rdf
+
+import org.simpleframework.xml.Attribute
+import org.simpleframework.xml.Text
+
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
  * Copyright (C) 2022  Antony Cartwright, Polycode Limited
@@ -11,11 +16,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-package uk.co.polycode.owltojava.rdf
-
-import org.simpleframework.xml.Attribute
-import org.simpleframework.xml.Text
-
 class RdfsText() {
 
     @field:Attribute(name = "lang", required = true)

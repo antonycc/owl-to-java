@@ -1,3 +1,9 @@
+package uk.co.polycode.owltojava.owl
+
+import org.simpleframework.xml.*
+
+import uk.co.polycode.owltojava.rdf.*
+
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
  * Copyright (C) 2022  Antony Cartwright, Polycode Limited
@@ -10,14 +16,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
- */
-package uk.co.polycode.owltojava.owl
-
-import org.simpleframework.xml.*
-
-import uk.co.polycode.owltojava.rdf.*
-
-/**
+ *
  * e.g.
  * <pre>
  * <rdfs:domain> *I am this one*

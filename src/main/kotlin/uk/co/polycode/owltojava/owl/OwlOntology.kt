@@ -1,3 +1,15 @@
+package uk.co.polycode.owltojava.owl
+
+import com.google.common.base.MoreObjects
+import org.simpleframework.xml.Attribute
+import org.simpleframework.xml.Element
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.Path
+import org.simpleframework.xml.Root
+import org.simpleframework.xml.Text
+
+import uk.co.polycode.owltojava.rdf.*
+
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
  * Copyright (C) 2022  Antony Cartwright, Polycode Limited
@@ -11,18 +23,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-package uk.co.polycode.owltojava.owl
-
-import com.google.common.base.MoreObjects
-import org.simpleframework.xml.Attribute
-import org.simpleframework.xml.Element
-import org.simpleframework.xml.ElementList
-import org.simpleframework.xml.Path
-import org.simpleframework.xml.Root
-import org.simpleframework.xml.Text
-
-import uk.co.polycode.owltojava.rdf.*
-
 class OwlOntology {
 
     @field:Attribute(name = "about", required = true)

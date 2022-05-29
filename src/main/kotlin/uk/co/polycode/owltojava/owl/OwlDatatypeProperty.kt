@@ -1,3 +1,10 @@
+package uk.co.polycode.owltojava.owl
+
+import com.google.common.base.MoreObjects
+import org.simpleframework.xml.*
+
+import uk.co.polycode.owltojava.rdf.*
+
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
  * Copyright (C) 2022  Antony Cartwright, Polycode Limited
@@ -11,13 +18,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-package uk.co.polycode.owltojava.owl
-
-import com.google.common.base.MoreObjects
-import org.simpleframework.xml.*
-
-import uk.co.polycode.owltojava.rdf.*
-
 class OwlDatatypeProperty : OwlProperty() {
 
     override fun toString() =
