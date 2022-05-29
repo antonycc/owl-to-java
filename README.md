@@ -19,6 +19,7 @@ OWL to Java currently:
 # TODO
 
 * Unit tests for individual functions
+* Consider: https://github.com/detekt/detekt and check badges
 * Generate Schema.org library Jar with tests
 * Kotlin idioms
 * Kotlin linter
