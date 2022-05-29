@@ -46,7 +46,7 @@ internal class GenerateJavaSourceTest {
         "https://schema.org/Person",
         "https://schema.org/City",
         "https://schema.org/Place",
-        "https://schema.org/CorporationX",
+        "https://schema.org/Corporation",
         "https://schema.org/Project",
         "https://schema.org/Book",
         "https://schema.org/Article",
