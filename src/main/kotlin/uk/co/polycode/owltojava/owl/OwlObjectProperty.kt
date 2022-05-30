@@ -1,9 +1,6 @@
 package uk.co.polycode.owltojava.owl
 
 import com.google.common.base.MoreObjects
-import org.simpleframework.xml.*
-
-import uk.co.polycode.owltojava.rdf.*
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)

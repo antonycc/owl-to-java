@@ -1,12 +1,12 @@
 package uk.co.polycode.owltojava.owl
 
 import com.google.common.base.MoreObjects
-import org.simpleframework.xml.*
+import org.simpleframework.xml.Element
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.ElementListUnion
+import uk.co.polycode.owltojava.rdf.RdfsResource
+import uk.co.polycode.owltojava.rdf.RdfsText
 import kotlin.reflect.full.createInstance
-
-import uk.co.polycode.owltojava.rdf.*
-
-import uk.co.polycode.owltojava.rdf.*
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)

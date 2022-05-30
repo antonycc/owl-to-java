@@ -2,15 +2,17 @@ package uk.co.polycode.owltojava
 
 import mu.KotlinLogging
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
 import uk.co.polycode.owltojava.owl.OwlClass
 import uk.co.polycode.owltojava.owl.OwlProperty
+import uk.co.polycode.owltojava.rdf.RdfDocument
 import java.io.File
 import java.net.URI
-
-import uk.co.polycode.owltojava.rdf.*
 
 private val logger = KotlinLogging.logger {}
 
@@ -96,7 +98,6 @@ abstract class RegenerateOntologyTask : DefaultTask() {
             licenceText = licenceText,
             desiredClasses = classes,
             primitivePropertyTypes = primitivePropertyTypes,
-            ignoredPropertyTypes = ignoredPropertyTypes,
             prunedPropertyTypes = prunedPropertyTypes,
             ignoredSuperclasses = ignoredSuperclasses
             )
@@ -112,7 +113,8 @@ abstract class RegenerateOntologyTask : DefaultTask() {
                 .forEach { logger.info(javaSourceBuilder.build(it.key, it.value)) }
 
         }
-        logger.info("Created ${ontologyClasses.size} Java classes for the OWL Ontology.: ${ontologyClasses.keys.map { it.labels }}")
+        val classLabels = ontologyClasses.keys.map { it.labels }
+        logger.info("Created ${ontologyClasses.size} Java classes for the OWL Ontology.: ${classLabels}")
     }
 
     companion object {

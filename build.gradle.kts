@@ -24,8 +24,17 @@ java {
     //targetCompatibility = "18"
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(18))
+        //languageVersion.set(KotlinVersion
     }
 }
+
+// TODO: Fix 'compileTestJava' task (current target is 18) and 'compileTestKotlin' task (current target is 1.8)
+//   jvm target compatibility should be set to the same Java version.
+//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+//    kotlinOptions {
+//        jvmTarget = "18"
+//    }
+//}
 
 repositories {
     mavenCentral()
@@ -91,11 +100,11 @@ var detektIgnoreFailuresValue: Boolean? = true
 if ( "detektSafeMode" in project.properties ) {
     detektIgnoreFailuresValue = (true == project.properties["detektSafeMode"])
 }
-tasks.named("check").configure {
-    this.setDependsOn(this.dependsOn.filterNot {
-        it is TaskProvider<*> && it.name == "detekt"
-    })
-}
+//tasks.named("check").configure {
+//    this.setDependsOn(this.dependsOn.filterNot {
+//        it is TaskProvider<*> && it.name == "detekt"
+//    })
+//}
 
 // See: https://detekt.dev/docs/gettingstarted/gradle/
 detekt {
@@ -113,7 +122,7 @@ detekt {
 
     // Define the detekt configuration(s) you want to use.
     // Defaults to the default detekt configuration.
-    //config = files("$projectDir/src/test/detekt/config.yml")
+    config = files("$projectDir/src/test/detekt/config.yml")
 
     // Applies the config files on top of detekt's default config file. `false` by default.
     buildUponDefaultConfig = true

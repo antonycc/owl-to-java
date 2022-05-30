@@ -13,8 +13,6 @@ OWL to Java currently:
 
 # Bugs
 
-* Fix warning creating: Type inference failed.
-
 /home/runner/work/owl-to-java/owl-to-java/gradlew clean build --info
 /home/runner/work/owl-to-java/owl-to-java/gradlew gradle clean check detekt -PdetektSafeMode=false
 
@@ -24,7 +22,7 @@ OWL to Java currently:
 * Unit tests for individual functions
 * Generate Schema.org library Jar with tests
 * Kotlin idioms
-* Kotlin linter
+* Kotlin linter (+ resolve type inference warning and tighten Detekt config)
 * Versioning policy, auto increment
 * @since versioned annotation on tests and auto-generated version history from test annotations
 * Support all classes as the default

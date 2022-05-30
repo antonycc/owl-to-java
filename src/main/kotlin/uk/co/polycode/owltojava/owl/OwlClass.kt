@@ -1,9 +1,11 @@
 package uk.co.polycode.owltojava.owl
 
 import com.google.common.base.MoreObjects
-import org.simpleframework.xml.*
-
-import uk.co.polycode.owltojava.rdf.*
+import org.simpleframework.xml.Element
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.ElementListUnion
+import uk.co.polycode.owltojava.rdf.RdfsResource
+import uk.co.polycode.owltojava.rdf.RdfsText
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
@@ -30,7 +32,9 @@ open class OwlClass : OwlClassRef() {
     lateinit var isDefinedBy: RdfsResource
 
     // http://schema.org/Thing - Does not have a sub-class
-    @field:ElementListUnion(ElementList(entry = "subClassOf", type=RdfsResource::class, inline = true, required = false))
+    @field:ElementListUnion(
+        ElementList(entry = "subClassOf", type=RdfsResource::class, inline = true, required = false)
+    )
     var subClassesOf: List<RdfsResource>? = null
 
     override fun toString() =

@@ -8,8 +8,6 @@ import org.simpleframework.xml.Path
 import org.simpleframework.xml.Root
 import org.simpleframework.xml.Text
 
-import uk.co.polycode.owltojava.rdf.*
-
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
  * Copyright (C) 2022  Antony Cartwright, Polycode Limited

@@ -1,9 +1,7 @@
 package uk.co.polycode.owltojava.owl
 
 import com.google.common.base.MoreObjects
-import org.simpleframework.xml.*
-
-import uk.co.polycode.owltojava.rdf.*
+import org.simpleframework.xml.Attribute
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
@@ -24,7 +22,8 @@ open class OwlIdRef() {
     lateinit var id: String
 
     constructor(_id: String) : this() { id = _id }
-    override fun equals(other: Any?) = id.equals(other)
+    override fun equals(other: Any?) = id == other
+    override fun hashCode() = id.hashCode()
     open fun copy(_id: String = id) = OwlIdRef(_id)
     override fun toString() = id
 }

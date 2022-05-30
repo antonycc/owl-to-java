@@ -9,8 +9,10 @@ import org.simpleframework.xml.ElementListUnion
 import org.simpleframework.xml.Namespace
 import org.simpleframework.xml.Path
 import org.simpleframework.xml.Root
-
-import uk.co.polycode.owltojava.owl.*
+import uk.co.polycode.owltojava.owl.OwlClass
+import uk.co.polycode.owltojava.owl.OwlDatatypeProperty
+import uk.co.polycode.owltojava.owl.OwlObjectProperty
+import uk.co.polycode.owltojava.owl.OwlOntology
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)

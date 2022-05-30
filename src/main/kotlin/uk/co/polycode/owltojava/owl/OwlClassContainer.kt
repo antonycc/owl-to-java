@@ -1,8 +1,8 @@
 package uk.co.polycode.owltojava.owl
 
-import org.simpleframework.xml.*
-
-import uk.co.polycode.owltojava.rdf.*
+import org.simpleframework.xml.Element
+import org.simpleframework.xml.ElementList
+import org.simpleframework.xml.ElementListUnion
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
@@ -50,7 +50,11 @@ class OwlClassContainer {
             .unionOf
             .classes
             .filter {
-                !listOf<String>("http://schema.org/Text", "http://schema.org/URL", "http://schema.org/Role").contains(it.id)
+                !listOf<String>(
+                    "https://schema.org/Text",
+                    "https://schema.org/URL",
+                    "https://schema.org/Role")
+                    .contains(it.id)
             }
             .toString()
         //return MoreObjects.toStringHelper(this.javaClass)

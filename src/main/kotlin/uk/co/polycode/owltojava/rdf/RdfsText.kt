@@ -28,7 +28,8 @@ class RdfsText() {
         lang = _lang
         text = _text
     }
-    override fun equals(other: Any?) = "${lang}:${text}".equals(other.toString())
+    override fun equals(other: Any?) = "${lang}:${text}" == other.toString()
+    override fun hashCode() = "${lang}:${text}".hashCode()
     fun copy(_lang: String, _text: String) = RdfsText(_lang, _text)
 
     override fun toString() = "${lang}:${text}"

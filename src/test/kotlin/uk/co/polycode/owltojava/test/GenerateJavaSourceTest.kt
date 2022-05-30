@@ -32,7 +32,9 @@ private val logger = KotlinLogging.logger {}
 
 internal class GenerateJavaSourceTest {
 
-    private val owlFilePath = ".${File.separator}src${File.separator}test${File.separator}resources${File.separator}schemaorg.owl"
+    private val owlFilePath = ".${File.separator}src"
+        .plus("${File.separator}test${File.separator}resources")
+        .plus("${File.separator}schemaorg.owl")
     private val javaSourceDirectoryPath = ".${File.separator}build${File.separator}generated-sources"
     private val javaBasePackage = "uk.co.polycode"
     private val licenceText = """
@@ -83,35 +85,39 @@ internal class GenerateJavaSourceTest {
         var expectedOutputFile = javaSourceDirectoryPath
         expectedOutputFile += "${File.separator}uk${File.separator}co${File.separator}polycode${File.separator}"
         expectedOutputFile += "${File.separator}org${File.separator}schema${File.separator}${expectedClass}.java"
+
         // Setup
         val owlFile = File(owlFilePath)
         val serializer: Serializer = Persister()
-        val javaSourceBuilder = JavaSourceBuilder(
-            lang = lang,
-            javaBasePackage = javaBasePackage,
-            licenceText = licenceText,
-            desiredClasses = classes,
-            primitivePropertyTypes = primitivePropertyTypes,
-            ignoredPropertyTypes = ignoredPropertyTypes,
-            prunedPropertyTypes = prunedPropertyTypes,
-            ignoredSuperclasses = ignoredSuperclasses
-        )
-
-        // Execution
         val workingDirectory = System.getProperty("user.dir")
         logger.debug("Working Directory = ${workingDirectory}}")
         val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
-        val ontologyClasses = OwlParser(
+        val owlParser = OwlParser(
             rdfDocument = rdfDocument,
             lang = lang,
             classes = classes,
             ignoredPropertyTypes = ignoredPropertyTypes,
             prunedPropertyTypes = prunedPropertyTypes
         )
-            .buildClassMap()
-            .filter { it.key.id !in primitivePropertyTypes.keys }
+        val javaSourceBuilder = JavaSourceBuilder(
+            lang = lang,
+            javaBasePackage = javaBasePackage,
+            licenceText = licenceText,
+            desiredClasses = classes,
+            primitivePropertyTypes = primitivePropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes,
+            ignoredSuperclasses = ignoredSuperclasses
+        )
+
+        // Execution
+        val ontologyClasses = owlParser.buildClassMap().filter { it.key.id !in primitivePropertyTypes.keys }
         val outputDir = File(javaSourceDirectoryPath)
-        RegenerateOntologyTask.writeClassMapAsJavaSource(javaSourceDirectoryPath, outputDir, javaBasePackage, ontologyClasses, javaSourceBuilder)
+        RegenerateOntologyTask.writeClassMapAsJavaSource(
+            javaSourceDirectoryPath,
+            outputDir,
+            javaBasePackage,
+            ontologyClasses,
+            javaSourceBuilder)
 
         // Validation
         val actualFile = File(expectedOutputFile)

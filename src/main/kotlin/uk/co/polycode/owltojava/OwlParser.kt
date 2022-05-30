@@ -1,9 +1,11 @@
 package uk.co.polycode.owltojava
 
 import mu.KotlinLogging
-
-import uk.co.polycode.owltojava.owl.*
-import uk.co.polycode.owltojava.rdf.*
+import uk.co.polycode.owltojava.owl.OwlClass
+import uk.co.polycode.owltojava.owl.OwlClassRef
+import uk.co.polycode.owltojava.owl.OwlProperty
+import uk.co.polycode.owltojava.rdf.RdfDocument
+import uk.co.polycode.owltojava.rdf.RdfsResource
 
 private val logger = KotlinLogging.logger {}
 
@@ -29,17 +31,9 @@ class OwlParser(
 
     private val noLabelForLanguage = "noLabelForLanguage_"
 
-    //fun withLanguage(lang: String) =
-    //    OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
-
-    //fun withClasses(classes: List<String>) =
-    //    OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
-
-    //fun withIgnoredPropertyTypes(ignoredPropertyTypes: List<String>) =
-    //    OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
-
-    //fun withPrunedPropertyTypes(prunedPropertyTypes: List<String>) =
-    //    OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
+    // TODO: Consider an alternative and parameterised fuzzy match to the last 3 characters
+    @field:Suppress("MagicNumber")
+    private val typeFuzzyMatchLast = 3
 
     fun buildClassMap(): MutableMap<OwlClass,List<OwlProperty>> {
         val classMap = createClassMapForClasses(classes)
@@ -142,10 +136,12 @@ class OwlParser(
         val allOwlProperties = listOf(rdfDocument.owlObjectProperties,rdfDocument.owlDataTypeProperties).flatten()
         var filteredOwlProperties = allOwlProperties
             .filter { owlProperty ->
-                owlProperty.domain.isNotEmpty() && owlClass.id in owlProperty.domain.first().classUnion.unionOf.classes.map { it.id }
+                        owlProperty.domain.isNotEmpty()
+                        && owlClass.id in owlProperty.domain.first().classUnion.unionOf.classes.map { it.id }
             }
-            .filter { owlProperty -> !owlProperty.supersededBy.any {
-                    superseder: RdfsResource -> superseder !in rdfDocument.owlClasses.map { availableClass: OwlClass -> availableClass.id } }
+            .filter { owlProperty: OwlProperty -> !owlProperty.supersededBy.any {
+                    superseder: RdfsResource ->
+                        superseder !in rdfDocument.owlClasses.map { availableClass: OwlClass -> availableClass.id } }
             }
             .map { it.withFieldTypes(fieldTypesForOwlProperty(it)) }
         return filteredOwlProperties
@@ -170,16 +166,13 @@ class OwlParser(
         // (e.g. "url" in "myUrl" or "ext" in "myText")
         val fieldName = owlProperty.fieldNameForOwlProperty(lang, noLabelForLanguage)
         val fieldTypesPrunedMatchingEndOfFieldName = prunedFieldTypes
-            .filter { it.id.endsWith(fieldName.takeLast(3), true) }
-        if (fieldTypesPrunedMatchingEndOfFieldName.isNotEmpty() ) {
-            return fieldTypesPrunedMatchingEndOfFieldName
-        }
-
-        val fieldTypesFirstPruned = prunedFieldTypes.filter { prunedPropertyTypes.isNotEmpty() && it.id == prunedPropertyTypes.first() }
-        if (fieldTypesFirstPruned.isNotEmpty() ) {
-            return fieldTypesFirstPruned
-        }
-
-        return fieldsTypes
+            .filter { it.id.endsWith(fieldName.takeLast(typeFuzzyMatchLast), true) }
+        return if (fieldTypesPrunedMatchingEndOfFieldName.isNotEmpty() )
+                fieldTypesPrunedMatchingEndOfFieldName
+            else
+                // Otherwise return the first of the pruned types or the original list
+                prunedFieldTypes
+                    .filter { prunedPropertyTypes.isNotEmpty() && it.id == prunedPropertyTypes.first() }
+                    .ifEmpty { fieldsTypes }
     }
 }

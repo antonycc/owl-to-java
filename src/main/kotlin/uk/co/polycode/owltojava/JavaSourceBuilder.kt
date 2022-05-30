@@ -1,12 +1,16 @@
 package uk.co.polycode.owltojava
 
-import com.squareup.javapoet.*
+import com.squareup.javapoet.ClassName
+import com.squareup.javapoet.FieldSpec
+import com.squareup.javapoet.JavaFile
+import com.squareup.javapoet.TypeSpec
 import mu.KotlinLogging
+import uk.co.polycode.owltojava.owl.OwlClass
+import uk.co.polycode.owltojava.owl.OwlClassRef
+import uk.co.polycode.owltojava.owl.OwlProperty
+import uk.co.polycode.owltojava.rdf.RdfsResource
 import java.net.URI
 import javax.lang.model.element.Modifier
-
-import uk.co.polycode.owltojava.owl.*
-import uk.co.polycode.owltojava.rdf.*
 
 private val logger = KotlinLogging.logger {}
 
@@ -29,7 +33,6 @@ open class JavaSourceBuilder(
     var licenceText: String,
     var desiredClasses: List<String>,
     var primitivePropertyTypes: Map<String, String>,
-    var ignoredPropertyTypes: List<String>,
     var prunedPropertyTypes: List<String>,
     var ignoredSuperclasses: List<String>
 ) {
@@ -92,7 +95,13 @@ open class JavaSourceBuilder(
 
         owlProperties
             .forEach() {
-                addJavaFields(it, javaClass, lang, javaBasePackage, primitivePropertyTypes, desiredClasses, prunedPropertyTypes)
+                addJavaFields(it,
+                    javaClass,
+                    lang,
+                    javaBasePackage,
+                    primitivePropertyTypes,
+                    desiredClasses,
+                    prunedPropertyTypes)
             }
 
         return JavaFile.builder(javaPackage, javaClass.build())
@@ -114,7 +123,10 @@ open class JavaSourceBuilder(
         ) {
             val superclassOwlClass = OwlClassRef()
             superclassOwlClass.id = owlSuperclass.resource
-            val additionalFieldTypeName = fieldTypeForOwlProperty(javaBasePackage, superclassOwlClass, primitivePropertyTypes)
+            val additionalFieldTypeName = fieldTypeForOwlProperty(
+                javaBasePackage,
+                superclassOwlClass,
+                primitivePropertyTypes)
             val additionalFieldName = additionalFieldTypeName.toString().split(".").last()
             if (additionalFieldName.isNotBlank()) {
                 val capitalisedFieldName = additionalFieldName.replaceFirst(
@@ -146,10 +158,21 @@ open class JavaSourceBuilder(
                 else
                     ClassName.bestGuess("${javaBasePackage}.${unknownClassName}")
             if (fieldType == null){
-                logger.warn("No field type found for Owl class: ${owlField.id} used by ${owlField.fieldNameForOwlProperty(lang, noLabelForLanguage)}")
+                val fieldNameForProperty = owlField.fieldNameForOwlProperty(lang, noLabelForLanguage)
+                logger.warn("No field type found for Owl class: ${owlField.id} used by ${fieldNameForProperty}")
             }
+            val fieldModifiers = listOf(
+                "public",
+                "private",
+                "static",
+                "final",
+                "volatile",
+                "transient",
+                "abstract",
+                "var",
+                "val")
             val safeFieldName =
-                if (fieldName in listOf("public", "private", "static", "final", "volatile", "transient", "abstract", "var", "val"))
+                if (fieldName in fieldModifiers)
                     "${fieldName}Field"
                 else
                     fieldName
@@ -180,13 +203,20 @@ open class JavaSourceBuilder(
                 }
         }
 
-        fun fieldTypeForOwlProperty(javaBasePackage: String, type: OwlClassRef, primitivePropertyTypes: Map<String, String>) =
+        fun fieldTypeForOwlProperty(
+                javaBasePackage: String,
+                type: OwlClassRef,
+                primitivePropertyTypes: Map<String, String>
+        ): ClassName =
             if(type.id in primitivePropertyTypes.keys)
                 ClassName.bestGuess(primitivePropertyTypes[type.id])
             else
                 ClassName.bestGuess(fullyQualifiedNameForPackageAndUri(javaBasePackage, type))
 
-        fun selectType(fieldTypes: List<OwlClassRef>, desiredClasses: List<String>, prunedPropertyTypes: List<String>): OwlClassRef? =
+        fun selectType(
+                fieldTypes: List<OwlClassRef>,
+                desiredClasses: List<String>,
+                prunedPropertyTypes: List<String>): OwlClassRef? =
             if (fieldTypes.isEmpty())
                 null
             else if (fieldTypes.size > 1 && fieldTypes.any { it.id in desiredClasses })

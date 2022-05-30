@@ -21,7 +21,8 @@ open class RdfsResource() {
     lateinit var resource: String
 
     constructor(_resource: String) : this() { resource = _resource }
-    override fun equals(other: Any?) = resource.equals(other)
+    override fun equals(other: Any?) = resource == other
+    override fun hashCode() = resource.hashCode()
     open fun copy(_resource: String = resource) = RdfsResource(_resource)
     override fun toString() = resource
 }
