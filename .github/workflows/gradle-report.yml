@@ -1,4 +1,4 @@
-name: Static analysis and expensive testing for OWL to Java
+name: Quality report
 
 on:
   schedule:
@@ -16,7 +16,7 @@ jobs:
         with:
           java-version: '18'
           distribution: 'temurin'
-      - name: Build with Gradle
+      - name: Check including tests and Detekt
         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
         with:
-          arguments: gradle clean check detekt -PdetektSafeMode=false
+          arguments: clean check detekt -PdetektSafeMode=false
