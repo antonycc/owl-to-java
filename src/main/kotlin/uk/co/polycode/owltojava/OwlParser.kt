@@ -29,17 +29,17 @@ class OwlParser(
 
     private val noLabelForLanguage = "noLabelForLanguage_"
 
-    fun withLanguage(lang: String) =
-        OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
+    //fun withLanguage(lang: String) =
+    //    OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
 
-    fun withClasses(classes: List<String>) =
-        OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
+    //fun withClasses(classes: List<String>) =
+    //    OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
 
-    fun withIgnoredPropertyTypes(ignoredPropertyTypes: List<String>) =
-        OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
+    //fun withIgnoredPropertyTypes(ignoredPropertyTypes: List<String>) =
+    //    OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
 
-    fun withPrunedPropertyTypes(prunedPropertyTypes: List<String>) =
-        OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
+    //fun withPrunedPropertyTypes(prunedPropertyTypes: List<String>) =
+    //    OwlParser(rdfDocument, lang, classes, ignoredPropertyTypes, prunedPropertyTypes)
 
     fun buildClassMap(): MutableMap<OwlClass,List<OwlProperty>> {
         val classMap = createClassMapForClasses(classes)

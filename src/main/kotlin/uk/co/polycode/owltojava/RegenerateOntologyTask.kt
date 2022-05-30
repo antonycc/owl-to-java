@@ -73,11 +73,20 @@ abstract class RegenerateOntologyTask : DefaultTask() {
         logger.debug("Parsed document ${rdfDocument.toString()}")
 
         // Extract classes
-        val ontologyClasses = OwlParser(rdfDocument)
-            .withLanguage(lang)
-            .withClasses(classes)
-            .withIgnoredPropertyTypes(ignoredPropertyTypes)
-            .withPrunedPropertyTypes(prunedPropertyTypes)
+        //val ontologyClasses = OwlParser(rdfDocument)
+        //    .withLanguage(lang)
+        //    .withClasses(classes)
+        //    .withIgnoredPropertyTypes(ignoredPropertyTypes)
+        //    .withPrunedPropertyTypes(prunedPropertyTypes)
+        //    .buildClassMap()
+        //    .filter { it.key.id !in primativePropertyTypes.keys }
+        val ontologyClasses = OwlParser(
+            rdfDocument = rdfDocument,
+            lang = lang,
+            classes = classes,
+            ignoredPropertyTypes = ignoredPropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes
+            )
             .buildClassMap()
             .filter { it.key.id !in primativePropertyTypes.keys }
 
@@ -90,7 +99,7 @@ abstract class RegenerateOntologyTask : DefaultTask() {
             ignoredPropertyTypes = ignoredPropertyTypes,
             prunedPropertyTypes = prunedPropertyTypes,
             ignoredSuperclasses = ignoredSuperclasses
-        )
+            )
 
         val latestOutputDir = if (dest.isNotBlank() && dest != "INFO") File(dest) else null
         outputDir = latestOutputDir

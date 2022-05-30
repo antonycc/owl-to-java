@@ -101,12 +101,15 @@ internal class GenerateJavaSourceTest {
         val workingDirectory = System.getProperty("user.dir")
         logger.debug("Working Directory = ${workingDirectory}}")
         val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
-        val ontologyClasses = OwlParser(rdfDocument)
-            .withLanguage(lang)
-            .withClasses(classes)
-            .withIgnoredPropertyTypes(ignoredPropertyTypes)
-            .withPrunedPropertyTypes(prunedPropertyTypes)
+        val ontologyClasses = OwlParser(
+            rdfDocument = rdfDocument,
+            lang = lang,
+            classes = classes,
+            ignoredPropertyTypes = ignoredPropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes
+        )
             .buildClassMap()
+            .filter { it.key.id !in primitivePropertyTypes.keys }
         val outputDir = File(javaSourceDirectoryPath)
         RegenerateOntologyTask.writeClassMapAsJavaSource(javaSourceDirectoryPath, outputDir, javaBasePackage, ontologyClasses, javaSourceBuilder)
 
