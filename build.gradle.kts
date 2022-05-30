@@ -12,6 +12,8 @@
 
 plugins {
     `kotlin-dsl`
+    //id("io.gitlab.arturbosch.detekt") version "8.0.2"
+    id("io.gitlab.arturbosch.detekt").version("1.20.0")
 }
 
 group = "com.example"
@@ -55,6 +57,9 @@ dependencies {
     testImplementation(kotlin("test"))
     // Use JUnit Jupiter for testing.
     //testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+
+    // Static analysis
+    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.20.0")
 }
 
 logger.quiet("Gradle logging an info log message which is always logged.")
@@ -68,7 +73,79 @@ logger.trace("Gradle logging a trace log message.") // Gradle never logs TRACE l
 tasks.test {
     useJUnitPlatform()
 }
-//tasks.named<Test>("test") {
-    // Use JUnit Platform for unit tests.
-//    useJUnitPlatform()
+
+//tasks.withType<Detekt>().configureEach {// .detekt {
+//    buildUponDefaultConfig = true // preconfigure defaults
+//    allRules = false // activate all available (even unstable) rules.
+//    config = files("$projectDir/config/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
+//    baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
 //}
+// hasProperty('detektIgnoreFailures') ? project.getProperty('detektIgnoreFailures') : 'hello'
+//ext.detektIgnoreFailures
+
+// Detekt excluded and non-failing by default until it is regularly passing
+// Override with: gradle clean detekt -PdetektSafeMode=false
+// TODO: Bring code and checks into alignment then include relatively quick tests in the check task
+val detektSafeMode: String by project
+var detektIgnoreFailuresValue: Boolean? = true
+if ( "detektSafeMode" in project.properties ) {
+    detektIgnoreFailuresValue = (true == project.properties["detektSafeMode"])
+}
+tasks.named("check").configure {
+    this.setDependsOn(this.dependsOn.filterNot {
+        it is TaskProvider<*> && it.name == "detekt"
+    })
+}
+
+// See: https://detekt.dev/docs/gettingstarted/gradle/
+detekt {
+    // Version of Detekt that will be used. When unspecified the latest detekt
+    // version found will be used. Override to stay on the same version.
+    //toolVersion = "[detekt_version]"
+
+    // The directories where detekt looks for source files.
+    // Defaults to `files("src/main/java", "src/test/java", "src/main/kotlin", "src/test/kotlin")`.
+    //source = files("src/main/java", "src/main/kotlin")
+
+    // Builds the AST in parallel. Rules are always executed in parallel.
+    // Can lead to speedups in larger projects. `false` by default.
+    //parallel = false
+
+    // Define the detekt configuration(s) you want to use.
+    // Defaults to the default detekt configuration.
+    //config = files("$projectDir/src/test/detekt/config.yml")
+
+    // Applies the config files on top of detekt's default config file. `false` by default.
+    buildUponDefaultConfig = true
+
+    // Turns on all the rules. `false` by default.
+    //allRules = false
+
+    // Specifying a baseline file. All findings stored in this file in subsequent runs of detekt.
+    baseline = file("$projectDir/src/test/detekt/baseline.xml")
+
+    // Disables all default detekt rulesets and will only run detekt with custom rules
+    // defined in plugins passed in with `detektPlugins` configuration. `false` by default.
+    //disableDefaultRuleSets = false
+
+    // Adds debug output during task execution. `false` by default.
+    //debug = false
+
+    // If set to `true` the build does not fail when the
+    // maxIssues count was reached. Defaults to `false`.
+    //ignoreFailures = false
+    ignoreFailures = detektIgnoreFailuresValue ?: false
+
+    // Android: Don't create tasks for the specified build types (e.g. "release")
+    //ignoredBuildTypes = listOf("release")
+
+    // Android: Don't create tasks for the specified build flavor (e.g. "production")
+    //ignoredFlavors = listOf("production")
+
+    // Android: Don't create tasks for the specified build variants (e.g. "productionRelease")
+    //ignoredVariants = listOf("productionRelease")
+
+    // Specify the base path for file paths in the formatted reports.
+    // If not set, all file paths reported will be absolute file path.
+    //basePath = projectDir
+}
