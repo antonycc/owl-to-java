@@ -48,7 +48,7 @@ abstract class RegenerateOntologyTask : DefaultTask() {
     abstract var classes: List<String>
 
     @get:Input
-    abstract var primativePropertyTypes: Map<String, String>
+    abstract var primitivePropertyTypes: Map<String, String>
 
     @get:Input
     abstract var ignoredPropertyTypes: List<String>
@@ -88,14 +88,14 @@ abstract class RegenerateOntologyTask : DefaultTask() {
             prunedPropertyTypes = prunedPropertyTypes
             )
             .buildClassMap()
-            .filter { it.key.id !in primativePropertyTypes.keys }
+            .filter { it.key.id !in primitivePropertyTypes.keys }
 
         val javaSourceBuilder = JavaSourceBuilder(
             lang = lang,
             javaBasePackage = javaBasePackage,
             licenceText = licenceText,
             desiredClasses = classes,
-            primitivePropertyTypes = primativePropertyTypes,
+            primitivePropertyTypes = primitivePropertyTypes,
             ignoredPropertyTypes = ignoredPropertyTypes,
             prunedPropertyTypes = prunedPropertyTypes,
             ignoredSuperclasses = ignoredSuperclasses
