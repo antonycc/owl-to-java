@@ -83,23 +83,14 @@ tasks.test {
     useJUnitPlatform()
 }
 
-//tasks.withType<Detekt>().configureEach {// .detekt {
-//    buildUponDefaultConfig = true // preconfigure defaults
-//    allRules = false // activate all available (even unstable) rules.
-//    config = files("$projectDir/config/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
-//    baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
-//}
-// hasProperty('detektIgnoreFailures') ? project.getProperty('detektIgnoreFailures') : 'hello'
-//ext.detektIgnoreFailures
-
-// Detekt excluded and non-failing by default until it is regularly passing
-// Override with: gradle clean detekt -PdetektSafeMode=false
-// TODO: Bring code and checks into alignment then include relatively quick tests in the check task
+// Detekt non-failing by default until
+// Override with: gradle build -PdetektSafeMode=false
 val detektSafeMode: String by project
 var detektIgnoreFailuresValue: Boolean? = true
 if ( "detektSafeMode" in project.properties ) {
     detektIgnoreFailuresValue = (true == project.properties["detektSafeMode"])
 }
+// Remove detekt from check if it takes too long
 //tasks.named("check").configure {
 //    this.setDependsOn(this.dependsOn.filterNot {
 //        it is TaskProvider<*> && it.name == "detekt"
