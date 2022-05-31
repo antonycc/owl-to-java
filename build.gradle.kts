@@ -10,10 +10,27 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // Mozilla Public License, v. 2.0 for more details.
 
+// Property which, if true, runs reports too expensive or distracting from the daily build and fails on error.
+// Override with: gradle build -PsafeBuildMode=false
+val safeBuildMode: String by project
+var detektIgnoreFailuresValue: Boolean = true
+var koverEnableAllReports: Boolean = false
+if ( "safeBuildMode" in project.properties && "false" == project.properties["safeBuildMode"] ) {
+    logger.info("Build is in non-SAFE mode with safeBuildMode: ${project.properties["safeBuildMode"]}")
+    detektIgnoreFailuresValue = false
+    koverEnableAllReports = true
+}else{
+    logger.info("Build is in SAFE mode with safeBuildMode: ${project.properties["safeBuildMode"]}")
+    detektIgnoreFailuresValue = true
+    koverEnableAllReports = false
+}
+logger.info("Gradle logging is outputting at INFO.")
+logger.debug("Gradle logging is outputting at DEBUG.")
+
 plugins {
     `kotlin-dsl`
-    //id("io.gitlab.arturbosch.detekt") version "8.0.2"
     id("io.gitlab.arturbosch.detekt").version("1.20.0")
+    id("org.jetbrains.kotlinx.kover").version("0.5.1")
 }
 
 group = "com.example"
@@ -71,81 +88,18 @@ dependencies {
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.20.0")
 }
 
-logger.quiet("Gradle logging an info log message which is always logged.")
-logger.error("Gradle logging an error log message.")
-logger.warn("Gradle logging a warning log message.")
-logger.lifecycle("Gradle logging a lifecycle info log message.")
-logger.info("Gradle logging an info log message.")
-logger.debug("Gradle logging a debug log message.")
-logger.trace("Gradle logging a trace log message.") // Gradle never logs TRACE level logs
-
 tasks.test {
     useJUnitPlatform()
 }
 
-// Detekt non-failing by default until
-// Override with: gradle build -PdetektSafeMode=false
-val detektSafeMode: String by project
-var detektIgnoreFailuresValue: Boolean? = true
-if ( "detektSafeMode" in project.properties ) {
-    detektIgnoreFailuresValue = (true == project.properties["detektSafeMode"])
+kover {
+    isDisabled = !koverEnableAllReports
 }
-// Remove detekt from check if it takes too long
-//tasks.named("check").configure {
-//    this.setDependsOn(this.dependsOn.filterNot {
-//        it is TaskProvider<*> && it.name == "detekt"
-//    })
-//}
 
 // See: https://detekt.dev/docs/gettingstarted/gradle/
 detekt {
-    // Version of Detekt that will be used. When unspecified the latest detekt
-    // version found will be used. Override to stay on the same version.
-    //toolVersion = "[detekt_version]"
-
-    // The directories where detekt looks for source files.
-    // Defaults to `files("src/main/java", "src/test/java", "src/main/kotlin", "src/test/kotlin")`.
-    //source = files("src/main/java", "src/main/kotlin")
-
-    // Builds the AST in parallel. Rules are always executed in parallel.
-    // Can lead to speedups in larger projects. `false` by default.
-    //parallel = false
-
-    // Define the detekt configuration(s) you want to use.
-    // Defaults to the default detekt configuration.
     config = files("$projectDir/src/test/detekt/config.yml")
-
-    // Applies the config files on top of detekt's default config file. `false` by default.
     buildUponDefaultConfig = true
-
-    // Turns on all the rules. `false` by default.
-    //allRules = false
-
-    // Specifying a baseline file. All findings stored in this file in subsequent runs of detekt.
     baseline = file("$projectDir/src/test/detekt/baseline.xml")
-
-    // Disables all default detekt rulesets and will only run detekt with custom rules
-    // defined in plugins passed in with `detektPlugins` configuration. `false` by default.
-    //disableDefaultRuleSets = false
-
-    // Adds debug output during task execution. `false` by default.
-    //debug = false
-
-    // If set to `true` the build does not fail when the
-    // maxIssues count was reached. Defaults to `false`.
-    //ignoreFailures = false
-    ignoreFailures = detektIgnoreFailuresValue ?: false
-
-    // Android: Don't create tasks for the specified build types (e.g. "release")
-    //ignoredBuildTypes = listOf("release")
-
-    // Android: Don't create tasks for the specified build flavor (e.g. "production")
-    //ignoredFlavors = listOf("production")
-
-    // Android: Don't create tasks for the specified build variants (e.g. "productionRelease")
-    //ignoredVariants = listOf("productionRelease")
-
-    // Specify the base path for file paths in the formatted reports.
-    // If not set, all file paths reported will be absolute file path.
-    //basePath = projectDir
+    ignoreFailures = detektIgnoreFailuresValue
 }

@@ -21,6 +21,7 @@ OWL to Java currently:
 
 * Unit tests for individual functions
 * Generate Schema.org library Jar with tests
+* Gradle Task
 * Kotlin idioms
 * Kotlin linter (+ resolve type inference warning and tighten Detekt config)
 * Versioning policy, auto increment
@@ -28,11 +29,8 @@ OWL to Java currently:
 * Support all classes as the default
 * Inheritance by interface (via Lombok, or better in Kotlin?) and aggregation
 * Full fidelity back to source document
-* Change schema.org references to https
 * Handling of plurals as collections e.g. Person.parent is a relationship with multiplicity
-* Peer review
 * Performance tuning
-* Gradle Task
 * Load configuration set by name e.g. (com.example.OwlToJavaConfigSetSchemaOrg.setTaskConfig(this))
 * Maven Task
 * Minimal JDK version for running + configurable and comparable
