@@ -21,24 +21,20 @@ OWL to Java currently:
 * Generate Schema.org library Jar with tests
 * Gradle Task
 * Kotlin idioms
-* Kotlin linter (+ resolve type inference warning and tighten Detekt config)
+* Publish Detekt and Kover reports from the Quality Report Build
 * Versioning policy, auto increment
 * @since versioned annotation on tests and auto-generated version history from test annotations
 * Support all classes as the default
 * Inheritance by interface (via Lombok, or better in Kotlin?) and aggregation
-* Full fidelity back to source document
 * Handling of plurals as collections e.g. Person.parent is a relationship with multiplicity
-* Performance tuning
+* Profiling
 * Load configuration set by name e.g. (com.example.OwlToJavaConfigSetSchemaOrg.setTaskConfig(this))
-* Maven Task
 * Minimal JDK version for running + configurable and comparable
 * Command-line execution from a shaded Jar
 * Command-line execution from a Docker container
-* HATEOAS REST API
 * RDBMS annotations + relational example
 * Graph DB annotations + graph example
-* Generate as Kotlin data classes
-* Java to OWL
+* HATEOAS REST API
 * Extend one schema with another
 * API docs
 * Java Docs
@@ -54,10 +50,9 @@ OWL to Java currently:
 * Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
 * Public website featuring API based generation and a viewer
 * GitHub and public website analytics
-* Donate option
+* Donate option (linked to hosting account)
 * Release to DockerHub
 * Release to Maven Central
-* Present to the community
 
 # See also
 
