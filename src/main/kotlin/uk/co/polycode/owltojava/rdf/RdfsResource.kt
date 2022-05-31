@@ -15,14 +15,8 @@ import org.simpleframework.xml.Attribute
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-open class RdfsResource() {
+open class RdfsResource {
 
     @field:Attribute(name = "resource", required = true)
     lateinit var resource: String
-
-    constructor(_resource: String) : this() { resource = _resource }
-    override fun equals(other: Any?) = resource == other
-    override fun hashCode() = resource.hashCode()
-    open fun copy(_resource: String = resource) = RdfsResource(_resource)
-    override fun toString() = resource
 }

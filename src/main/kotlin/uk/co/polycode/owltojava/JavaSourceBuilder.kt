@@ -46,19 +46,12 @@ open class JavaSourceBuilder(
         val javaClass = TypeSpec
             .classBuilder(javaClassName)
             .addModifiers(Modifier.PUBLIC)
-        val javadocText = owlClass.comments
-            .filter { it.lang == lang }
-            .map { it.text }
-            .reduce { javadoc, it -> javadoc.plus(it) }
-            .plus("\n\n${licenceText}")
-        if (javadocText.isNotBlank()) {
-            val javadocTextEscaped = javadocText.replace("\$", "DOLLAR")
-            try {
-                javaClass.addJavadoc(javadocTextEscaped)
-            } catch (e: Exception) {
-                logger.warn("Could not add javadoc: ${javadocTextEscaped} due to: ${e.message}")
-                logger.debug(e.stackTraceToString())
-            }
+        val javadocTextEscaped = getClassJavaDocEscaped(owlClass)
+        try {
+            javaClass.addJavadoc(javadocTextEscaped)
+        } catch (e: Exception) {
+            logger.warn("Could not add javadoc: ${javadocTextEscaped} due to: ${e.message}")
+            logger.debug(e.stackTraceToString())
         }
         val javaSuperclasses = owlClass.subClassesOf
         if (!javaSuperclasses.isNullOrEmpty()) {
@@ -109,11 +102,24 @@ open class JavaSourceBuilder(
             .toString()
     }
 
+    private fun getClassJavaDocEscaped(owlClass: OwlClass): String {
+        val label = owlClass.labels.firstOrNull { it.lang == lang }?.text ?: ""
+        val comments = owlClass.comments
+            .filter { it.lang == lang }
+            .map { it.text }
+            .fold("${label}\n\n") { javadoc, it -> javadoc.plus(it) }
+        // TODO: Find a better way to escape "$" on the class JavaDoc than using the string "DOLLAR"
+        return if (comments.isBlank())
+            licenceText
+        else
+            "${comments}\n\n${licenceText}"
+            .replace("\$", "DOLLAR")
+    }
+
     companion object {
 
         private const val unknownPackageName = "unknown.package"
         private const val unknownClassName = "UnknownClass"
-        private const val noLabelForLanguage = "noLabelForLanguage_"
 
         fun addJavaFieldsForAdditionalSuperclasses(
             owlSuperclass: RdfsResource,
@@ -150,7 +156,7 @@ open class JavaSourceBuilder(
             prunedPropertyTypes: List<String>
         ) {
             val fieldType = selectType(owlField.fieldTypes, desiredClasses, prunedPropertyTypes)
-            val fieldName = owlField.fieldNameForOwlProperty(lang, noLabelForLanguage)
+            val fieldName = owlField.fieldNameForOwlProperty()
             val fieldComments = owlField.commentsForOwlProperty(lang)
             val fieldTypeName =
                 if (fieldType != null)
@@ -158,7 +164,7 @@ open class JavaSourceBuilder(
                 else
                     ClassName.bestGuess("${javaBasePackage}.${unknownClassName}")
             if (fieldType == null){
-                val fieldNameForProperty = owlField.fieldNameForOwlProperty(lang, noLabelForLanguage)
+                val fieldNameForProperty = owlField.fieldNameForOwlProperty()
                 logger.warn("No field type found for Owl class: ${owlField.id} used by ${fieldNameForProperty}")
             }
             val fieldModifiers = listOf(

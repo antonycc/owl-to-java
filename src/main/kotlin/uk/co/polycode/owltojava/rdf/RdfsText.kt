@@ -16,21 +16,13 @@ import org.simpleframework.xml.Text
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-class RdfsText() {
+class RdfsText {
 
     @field:Attribute(name = "lang", required = true)
     lateinit var lang: String
 
     @field:Text(required = true)
     lateinit var text: String
-
-    constructor(_lang: String, _text: String) : this() {
-        lang = _lang
-        text = _text
-    }
-    override fun equals(other: Any?) = "${lang}:${text}" == other.toString()
-    override fun hashCode() = "${lang}:${text}".hashCode()
-    fun copy(_lang: String, _text: String) = RdfsText(_lang, _text)
 
     override fun toString() = "${lang}:${text}"
 }

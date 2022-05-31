@@ -16,14 +16,8 @@ import org.simpleframework.xml.Attribute
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-open class OwlIdRef() {
+open class OwlIdRef {
 
     @field:Attribute(name = "about", required = true)
     lateinit var id: String
-
-    constructor(_id: String) : this() { id = _id }
-    override fun equals(other: Any?) = id == other
-    override fun hashCode() = id.hashCode()
-    open fun copy(_id: String = id) = OwlIdRef(_id)
-    override fun toString() = id
 }

@@ -45,13 +45,4 @@ class RdfDocument {
 
     @field:ElementListUnion(ElementList(entry = "DatatypeProperty", type=OwlDatatypeProperty::class, inline = true))
     lateinit var owlDataTypeProperties: List<OwlDatatypeProperty>
-
-    override fun toString() =
-        MoreObjects.toStringHelper(this.javaClass)
-            .add("id", id)
-            .add("owlOntology", owlOntology)
-            .add("owlClasses", owlClasses)
-            .add("owlObjectProperties", owlObjectProperties)
-            .add("owlDataTypeProperties", owlDataTypeProperties)
-            .toString().plus("\n")
 }

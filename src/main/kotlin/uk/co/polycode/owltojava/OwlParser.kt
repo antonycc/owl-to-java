@@ -29,8 +29,6 @@ class OwlParser(
     var ignoredPropertyTypes: List<String> = mutableListOf(),
     var prunedPropertyTypes: List<String> = mutableListOf()){
 
-    private val noLabelForLanguage = "noLabelForLanguage_"
-
     // TODO: Consider an alternative and parameterised fuzzy match to the last 3 characters
     @field:Suppress("MagicNumber")
     private val typeFuzzyMatchLast = 3
@@ -134,15 +132,13 @@ class OwlParser(
 
     private fun fieldsForClass(owlClass: OwlClass): List<OwlProperty> {
         val allOwlProperties = listOf(rdfDocument.owlObjectProperties,rdfDocument.owlDataTypeProperties).flatten()
+        val availableClassIds = rdfDocument.owlClasses.map { availableClass: OwlClass -> availableClass.id }
         var filteredOwlProperties = allOwlProperties
             .filter { owlProperty ->
                         owlProperty.domain.isNotEmpty()
                         && owlClass.id in owlProperty.domain.first().classUnion.unionOf.classes.map { it.id }
             }
-            .filter { owlProperty: OwlProperty -> !owlProperty.supersededBy.any {
-                    superseder: RdfsResource ->
-                        superseder !in rdfDocument.owlClasses.map { availableClass: OwlClass -> availableClass.id } }
-            }
+            .filter { owlProperty: OwlProperty -> !owlProperty.supersededBy.any { it.resource !in availableClassIds} }
             .map { it.withFieldTypes(fieldTypesForOwlProperty(it)) }
         return filteredOwlProperties
     }
@@ -164,7 +160,7 @@ class OwlParser(
 
         // If the last three characters of the field name match a pruned type use it.
         // (e.g. "url" in "myUrl" or "ext" in "myText")
-        val fieldName = owlProperty.fieldNameForOwlProperty(lang, noLabelForLanguage)
+        val fieldName = owlProperty.fieldNameForOwlProperty()
         val fieldTypesPrunedMatchingEndOfFieldName = prunedFieldTypes
             .filter { it.id.endsWith(fieldName.takeLast(typeFuzzyMatchLast), true) }
         return if (fieldTypesPrunedMatchingEndOfFieldName.isNotEmpty() )

@@ -18,7 +18,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
-import org.slf4j.impl.StaticLoggerBinder
 import java.io.File
 
 import uk.co.polycode.owltojava.rdf.*
@@ -44,6 +43,7 @@ internal class OwlParserTest {
         "https://schema.org/Project",
         "https://schema.org/Book",
         "https://schema.org/Article",
+        "https://example.com/NoLang",
         "https://schema.org/Fake"
     )
     private val primitivePropertyTypes = mapOf(
@@ -67,16 +67,6 @@ internal class OwlParserTest {
     )
 
     @Test
-    fun testLogger() {
-        logger.trace("Test logged using SLF4J API at level: Trace")
-        logger.debug("Test logged using SLF4J API at level: Debug")
-        logger.info("Test logged using SLF4J API at level: Info")
-        logger.warn("The current logging implementation is ${StaticLoggerBinder.getSingleton().loggerFactory}")
-        logger.warn("Test logged using SLF4J API at level: Error")
-        logger.error("Test logged using SLF4J API at level: Warning")
-    }
-
-    @Test
     fun testExpectedClassInSkeletonClassMap() {
 
         // Expected results
@@ -86,10 +76,10 @@ internal class OwlParserTest {
         // Setup
         val owlFile = File(skeletonOwlFilePath)
         val serializer: Serializer = Persister()
-
-        // Execution
         logger.debug("Working Directory = ${System.getProperty("user.dir")}}")
         val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+
+        // Execution
         val ontologyClasses = OwlParser(
             rdfDocument = rdfDocument,
             lang = lang,
@@ -110,6 +100,35 @@ internal class OwlParserTest {
 
         // Expected results
         val expectedClass = "Person"
+        val expectedNumberOfClasses = 1
+
+        // Setup
+        val owlFile = File(minimalOwlFilePath)
+        val serializer: Serializer = Persister()
+
+        // Execution
+        logger.debug("Working Directory = ${System.getProperty("user.dir")}}")
+        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val ontologyClasses = OwlParser(
+            rdfDocument = rdfDocument,
+            lang = lang,
+            classes = classes,
+            ignoredPropertyTypes = ignoredPropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes
+        )
+            .buildClassMap()
+            .filter { it.key.id !in primitivePropertyTypes.keys }
+
+        // Validation
+        val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size
+        assertEquals(expectedNumberOfClasses, actualNumberOfTargetClasses)
+    }
+
+    @Test
+    fun testExpectedNoLanguageClassInMinimalClassMap() {
+
+        // Expected results
+        val expectedClass = "NoLang"
         val expectedNumberOfClasses = 1
 
         // Setup

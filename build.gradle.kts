@@ -13,8 +13,8 @@
 // Property which, if true, runs reports too expensive or distracting from the daily build and fails on error.
 // Override with: gradle build -PsafeBuildMode=false
 val safeBuildMode: String by project
-var detektIgnoreFailuresValue: Boolean = true
-var koverEnableAllReports: Boolean = false
+var detektIgnoreFailuresValue: Boolean
+var koverEnableAllReports: Boolean
 if ( "safeBuildMode" in project.properties && "false" == project.properties["safeBuildMode"] ) {
     logger.info("Build is in non-SAFE mode with safeBuildMode: ${project.properties["safeBuildMode"]}")
     detektIgnoreFailuresValue = false

@@ -25,6 +25,11 @@
 		<rdfs:subClassOf rdf:resource="https://schema.org/AdministrativeArea"/>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Country"/>
 	</owl:Class>
+	<owl:Class rdf:about="https://example.com/NoLang">
+		<rdfs:label xml:lang="xx">NoLang</rdfs:label>
+		<rdfs:comment xml:lang="xx">A Class using a fictitious language code</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="https://example.com/NoLang"/>
+	</owl:Class>
 	<owl:Class rdf:about="https://schema.org/AdministrativeArea">
 		<rdfs:comment xml:lang="en">A geographical region, typically under the jurisdiction of a particular government.</rdfs:comment>
 		<rdfs:label xml:lang="en">AdministrativeArea</rdfs:label>
@@ -627,6 +632,25 @@
 	/ Property Definitions
 	/////////////////////
 	-->
+	<owl:ObjectProperty rdf:about="https://example.com/nolangproperty">
+		<rdfs:comment xml:lang="xx">A description of the item in non-existent language xx.</rdfs:comment>
+		<rdfs:label xml:lang="xx">description in language xx</rdfs:label>
+		<rdfs:isDefinedBy rdf:resource="https://example.com/nolangproperty"/>
+		<rdfs:domain>
+			<owl:Class>
+				<owl:unionOf rdf:parseType="Collection">
+					<owl:Class rdf:about="https://schema.org/Thing"/>
+				</owl:unionOf>
+			</owl:Class>
+		</rdfs:domain>
+		<rdfs:range>
+			<owl:Class>
+				<owl:unionOf rdf:parseType="Collection">
+					<owl:Class rdf:about="https://example.com/NoLang"/>
+				</owl:unionOf>
+			</owl:Class>
+		</rdfs:range>
+	</owl:ObjectProperty>
 	<owl:ObjectProperty rdf:about="https://schema.org/affiliation">
 		<rdfs:subPropertyOf rdf:resource="https://schema.org/memberOf"/>
 		<rdfs:label xml:lang="en">affiliation</rdfs:label>

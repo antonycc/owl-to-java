@@ -13,8 +13,6 @@ OWL to Java currently:
 
 # Bugs
 
-/home/runner/work/owl-to-java/owl-to-java/gradlew clean build --info
-/home/runner/work/owl-to-java/owl-to-java/gradlew gradle clean check detekt -PdetektSafeMode=false
 
 
 # TODO

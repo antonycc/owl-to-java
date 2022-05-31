@@ -24,6 +24,11 @@
 		<rdfs:comment xml:lang="en">The most generic type of item.</rdfs:comment>
 		<rdfs:isDefinedBy rdf:resource="https://schema.org/Thing"/>
 	</owl:Class>
+	<owl:Class rdf:about="https://example.com/NoLang">
+		<rdfs:label xml:lang="xx">NoLang</rdfs:label>
+		<rdfs:comment xml:lang="xx">A Class using a fictitious language code</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="https://example.com/NoLang"/>
+	</owl:Class>
 	<owl:Class rdf:about="https://schema.org/Person">
 		<rdfs:label xml:lang="en">Person</rdfs:label>
 		<rdfs:subClassOf rdf:resource="https://schema.org/Thing"/>
@@ -112,6 +117,27 @@
 			<owl:Class>
 				<owl:unionOf rdf:parseType="Collection">
 					<owl:Class rdf:about="https://schema.org/Text"/>
+					<owl:Class rdf:about="https://schema.org/URL"/>
+					<owl:Class rdf:about="https://schema.org/Role"/>
+				</owl:unionOf>
+			</owl:Class>
+		</rdfs:range>
+	</owl:ObjectProperty>
+	<owl:ObjectProperty rdf:about="https://example.com/nolangproperty">
+		<rdfs:comment xml:lang="xx">A description of the item in non-existent language xx.</rdfs:comment>
+		<rdfs:label xml:lang="xx">description in language xx</rdfs:label>
+		<rdfs:isDefinedBy rdf:resource="https://example.com/nolangproperty"/>
+		<rdfs:domain>
+			<owl:Class>
+				<owl:unionOf rdf:parseType="Collection">
+					<owl:Class rdf:about="https://schema.org/Thing"/>
+				</owl:unionOf>
+			</owl:Class>
+		</rdfs:domain>
+		<rdfs:range>
+			<owl:Class>
+				<owl:unionOf rdf:parseType="Collection">
+					<owl:Class rdf:about="https://example.com/NoLang"/>
 					<owl:Class rdf:about="https://schema.org/URL"/>
 					<owl:Class rdf:about="https://schema.org/Role"/>
 				</owl:unionOf>

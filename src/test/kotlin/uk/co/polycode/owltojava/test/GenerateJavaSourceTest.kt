@@ -26,15 +26,17 @@ import java.math.BigInteger
 import java.net.URL
 import java.time.ZonedDateTime
 import kotlin.test.Test
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 private val logger = KotlinLogging.logger {}
 
 internal class GenerateJavaSourceTest {
 
-    private val owlFilePath = ".${File.separator}src"
-        .plus("${File.separator}test${File.separator}resources")
-        .plus("${File.separator}schemaorg.owl")
+    private val srcTestResources = ".${File.separator}src${File.separator}test${File.separator}resources"
+    private val wholeOwlFilePath = srcTestResources.plus("${File.separator}schemaorg.owl")
+    private val minimalOwlFilePath = srcTestResources.plus("${File.separator}schemaorg-minimal-person.owl")
+    //private val skeletonOwlFilePath = srcTestResources.plus("${File.separator}schemaorg-skeleton.owl")
     private val javaSourceDirectoryPath = ".${File.separator}build${File.separator}generated-sources"
     private val javaBasePackage = "uk.co.polycode"
     private val licenceText = """
@@ -52,6 +54,7 @@ internal class GenerateJavaSourceTest {
         "https://schema.org/Project",
         "https://schema.org/Book",
         "https://schema.org/Article",
+        "https://example.com/NoLang",
         "https://schema.org/Fake"
     )
     private val primitivePropertyTypes = mapOf(
@@ -78,6 +81,131 @@ internal class GenerateJavaSourceTest {
     )
 
     @Test
+    fun testExpectClassToBeGenerated() {
+
+        // Expected results
+        val expectedClass = "Person"
+        val expectedClassLabel = "A person (alive, dead, undead, or fictional)."
+
+        // Setup
+        val owlFile = File(minimalOwlFilePath)
+        val serializer: Serializer = Persister()
+        val workingDirectory = System.getProperty("user.dir")
+        logger.debug("Working Directory = ${workingDirectory}}")
+        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val owlParser = OwlParser(
+            rdfDocument = rdfDocument,
+            lang = lang,
+            classes = classes,
+            ignoredPropertyTypes = ignoredPropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes
+        )
+        val javaSourceBuilder = JavaSourceBuilder(
+            lang = lang,
+            javaBasePackage = javaBasePackage,
+            licenceText = licenceText,
+            desiredClasses = classes,
+            primitivePropertyTypes = primitivePropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes,
+            ignoredSuperclasses = ignoredSuperclasses
+        )
+
+        // Execution
+        val ontologyClasses = owlParser.buildClassMap().filter { it.key.id !in primitivePropertyTypes.keys }
+        val owlExpectedClass = ontologyClasses.keys.firstOrNull { it.id.contains(expectedClass)}
+        val owlExpectedProperties = ontologyClasses[owlExpectedClass]
+        assertNotNull(owlExpectedClass)
+        assertNotNull(owlExpectedProperties)
+        val javaSource = javaSourceBuilder.build(owlExpectedClass, owlExpectedProperties)
+
+        // Validation
+        assertTrue { javaSource.isNotBlank() && javaSource.contains("public class ${expectedClass}") }
+        assertTrue { javaSource.isNotBlank() && javaSource.contains(expectedClassLabel) }
+    }
+
+    @Test
+    fun testExpectNoLangClassToBeGenerated() {
+
+        // Expected results
+        val expectedClass = "NoLang"
+
+        // Setup
+        val owlFile = File(minimalOwlFilePath)
+        val serializer: Serializer = Persister()
+        val workingDirectory = System.getProperty("user.dir")
+        logger.debug("Working Directory = ${workingDirectory}}")
+        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val owlParser = OwlParser(
+            rdfDocument = rdfDocument,
+            lang = lang,
+            classes = classes,
+            ignoredPropertyTypes = ignoredPropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes
+        )
+        val javaSourceBuilder = JavaSourceBuilder(
+            lang = lang,
+            javaBasePackage = javaBasePackage,
+            licenceText = licenceText,
+            desiredClasses = classes,
+            primitivePropertyTypes = primitivePropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes,
+            ignoredSuperclasses = ignoredSuperclasses
+        )
+
+        // Execution
+        val ontologyClasses = owlParser.buildClassMap().filter { it.key.id !in primitivePropertyTypes.keys }
+        val owlExpectedClass = ontologyClasses.keys.firstOrNull { it.id.contains(expectedClass)}
+        val owlExpectedProperties = ontologyClasses[owlExpectedClass]
+        assertNotNull(owlExpectedClass)
+        assertNotNull(owlExpectedProperties)
+        val javaSource = javaSourceBuilder.build(owlExpectedClass, owlExpectedProperties)
+
+        // Validation
+        assertTrue { javaSource.isNotBlank() && javaSource.contains("public class ${expectedClass}") }
+    }
+
+    @Test
+    fun testExpectThingWithNoLangClassToBeGenerated() {
+
+        // Expected results
+        val expectedClass = "Thing"
+
+        // Setup
+        val owlFile = File(minimalOwlFilePath)
+        val serializer: Serializer = Persister()
+        val workingDirectory = System.getProperty("user.dir")
+        logger.debug("Working Directory = ${workingDirectory}}")
+        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val owlParser = OwlParser(
+            rdfDocument = rdfDocument,
+            lang = lang,
+            classes = classes,
+            ignoredPropertyTypes = ignoredPropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes
+        )
+        val javaSourceBuilder = JavaSourceBuilder(
+            lang = lang,
+            javaBasePackage = javaBasePackage,
+            licenceText = licenceText,
+            desiredClasses = classes,
+            primitivePropertyTypes = primitivePropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes,
+            ignoredSuperclasses = ignoredSuperclasses
+        )
+
+        // Execution
+        val ontologyClasses = owlParser.buildClassMap().filter { it.key.id !in primitivePropertyTypes.keys }
+        val owlExpectedClass = ontologyClasses.keys.firstOrNull { it.id.contains(expectedClass)}
+        val owlExpectedProperties = ontologyClasses[owlExpectedClass]
+        assertNotNull(owlExpectedClass)
+        assertNotNull(owlExpectedProperties)
+        val javaSource = javaSourceBuilder.build(owlExpectedClass, owlExpectedProperties)
+
+        // Validation
+        assertTrue { javaSource.isNotBlank() && javaSource.contains("public NoLang nolangproperty;") }
+    }
+
+    @Test
     fun testJavaSourceFileInOutput() {
 
         // Expected results
@@ -87,7 +215,7 @@ internal class GenerateJavaSourceTest {
         expectedOutputFile += "${File.separator}org${File.separator}schema${File.separator}${expectedClass}.java"
 
         // Setup
-        val owlFile = File(owlFilePath)
+        val owlFile = File(wholeOwlFilePath)
         val serializer: Serializer = Persister()
         val workingDirectory = System.getProperty("user.dir")
         logger.debug("Working Directory = ${workingDirectory}}")
