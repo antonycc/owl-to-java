@@ -144,6 +144,43 @@
 			</owl:Class>
 		</rdfs:range>
 	</owl:ObjectProperty>
+	<!--owl:ObjectProperty rdf:about="https://example.com/noRangeProperty">
+		<rdfs:comment xml:lang="en">A property of the item in an undefined range.</rdfs:comment>
+		<rdfs:label xml:lang="en">Property</rdfs:label>
+		<rdfs:isDefinedBy rdf:resource="https://schema.org/noRangeProperty"/>
+		<rdfs:domain>
+			<owl:Class>
+				<owl:unionOf rdf:parseType="Collection">
+					<owl:Class rdf:about="https://schema.org/Thing"/>
+				</owl:unionOf>
+			</owl:Class>
+		</rdfs:domain>
+		<rdfs:range>
+			<owl:Class>
+				<owl:unionOf rdf:parseType="Collection">
+				</owl:unionOf>
+			</owl:Class>
+		</rdfs:range>
+	</owl:ObjectProperty-->
+	<owl:ObjectProperty rdf:about="https://example.com/roleOnlyProperty">
+		<rdfs:comment xml:lang="en">A property of the item in an undefined range.</rdfs:comment>
+		<rdfs:label xml:lang="en">Property</rdfs:label>
+		<rdfs:isDefinedBy rdf:resource="https://schema.org/roleOnlyProperty"/>
+		<rdfs:domain>
+			<owl:Class>
+				<owl:unionOf rdf:parseType="Collection">
+					<owl:Class rdf:about="https://schema.org/Thing"/>
+				</owl:unionOf>
+			</owl:Class>
+		</rdfs:domain>
+		<rdfs:range>
+			<owl:Class>
+				<owl:unionOf rdf:parseType="Collection">
+					<owl:Class rdf:about="https://schema.org/Role"/>
+				</owl:unionOf>
+			</owl:Class>
+		</rdfs:range>
+	</owl:ObjectProperty>
 	<owl:ObjectProperty rdf:about="http://schema.polycode.co.uk/Value">
 		<rdfs:comment xml:lang="en">Monetary value of this thing.</rdfs:comment>
 		<rdfs:label xml:lang="en">description</rdfs:label>
