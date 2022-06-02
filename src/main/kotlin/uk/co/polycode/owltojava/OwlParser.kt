@@ -5,7 +5,6 @@ import uk.co.polycode.owltojava.owl.OwlClass
 import uk.co.polycode.owltojava.owl.OwlClassRef
 import uk.co.polycode.owltojava.owl.OwlProperty
 import uk.co.polycode.owltojava.rdf.RdfDocument
-import uk.co.polycode.owltojava.rdf.RdfsResource
 
 private val logger = KotlinLogging.logger {}
 
@@ -34,7 +33,7 @@ class OwlParser(
     private val typeFuzzyMatchLast = 3
 
     fun buildClassMap(): MutableMap<OwlClass,List<OwlProperty>> {
-        val classMap = createClassMapForClasses(classes)
+        val classMap = createClassMapForClasses(classes.ifEmpty { rdfDocument.owlClasses.map { it.id } })
 
         // Iterate through the map
         //      creating classes for any properties that have a class ref
@@ -131,16 +130,17 @@ class OwlParser(
         classList.firstOrNull { it.id == classRef.id }
 
     private fun fieldsForClass(owlClass: OwlClass): List<OwlProperty> {
-        val allOwlProperties = listOf(rdfDocument.owlObjectProperties,rdfDocument.owlDataTypeProperties).flatten()
-        val availableClassIds = rdfDocument.owlClasses.map { availableClass: OwlClass -> availableClass.id }
-        var filteredOwlProperties = allOwlProperties
+        val availableClassIds = rdfDocument.owlClasses
+            .map { availableClass: OwlClass -> availableClass.id }
+            .toHashSet()
+        return listOf(rdfDocument.owlObjectProperties,rdfDocument.owlDataTypeProperties)
+            .flatten()
             .filter { owlProperty ->
                         owlProperty.domain.isNotEmpty()
                         && owlClass.id in owlProperty.domain.first().classUnion.unionOf.classes.map { it.id }
             }
             .filter { owlProperty: OwlProperty -> !owlProperty.supersededBy.any { it.resource !in availableClassIds} }
             .map { it.withFieldTypes(fieldTypesForOwlProperty(it)) }
-        return filteredOwlProperties
     }
 
     private fun fieldTypesForOwlProperty(owlProperty: OwlProperty): List<OwlClassRef> {

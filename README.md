@@ -24,7 +24,6 @@ OWL to Java currently:
 * Publish Detekt and Kover reports from the Quality Report Build
 * Versioning policy, auto increment
 * @since versioned annotation on tests and auto-generated version history from test annotations
-* Support all classes as the default
 * Inheritance by interface (via Lombok, or better in Kotlin?) and aggregation
 * Handling of plurals as collections e.g. Person.parent is a relationship with multiplicity
 * Profiling
@@ -97,18 +96,18 @@ import java.time.ZonedDateTime;
  * A person (alive, dead, undead, or fictional).
  */
 public class Person extends Thing {
-  /**
-   * Where to find the definition of the OWL Class used to generate this Java class.
-   */
-  public String isDefinedBy = "https://schema.org/Person";
+	/**
+	 * Where to find the definition of the OWL Class used to generate this Java class.
+	 */
+	public String isDefinedBy = "https://schema.org/Person";
 
-  /**
-   * An additional name for a Person, can be used for a middle name.
-   */
-  public String additionalName;
-
-  /**
- % 
+	/**
+	 * An additional name for a Person, can be used for a middle name.
+	 */
+	public String additionalName;
+	
+	//truncated..
+}
 ```
 
 # Examples:

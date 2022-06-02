@@ -95,6 +95,33 @@ internal class OwlParserTest {
         assertEquals(expectedNumberOfClasses, actualNumberOfTargetClasses)
     }
 
+    /**
+     *  Support all classes as the default
+     *  @since
+     */
+    @Test
+    fun testExpectedClassInSkeletonClassMapWithDefaults() {
+
+        // Expected results
+        val expectedClass = "Place"
+        val expectedNumberOfClasses = 1
+
+        // Setup
+        val owlFile = File(skeletonOwlFilePath)
+        val serializer: Serializer = Persister()
+        logger.debug("Working Directory = ${System.getProperty("user.dir")}}")
+        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+
+        // Execution
+        val ontologyClasses = OwlParser(rdfDocument = rdfDocument)
+            .buildClassMap()
+            .filter { it.key.id !in primitivePropertyTypes.keys }
+
+        // Validation
+        val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size
+        assertEquals(expectedNumberOfClasses, actualNumberOfTargetClasses)
+    }
+
     @Test
     fun testExpectedClassInMinimalClassMap() {
 
