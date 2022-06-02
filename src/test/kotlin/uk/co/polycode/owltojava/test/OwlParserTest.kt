@@ -97,7 +97,7 @@ internal class OwlParserTest {
 
     /**
      *  Support all classes as the default
-     *  @since
+     *  @since("Commit hash: e66cfd2dedd09bb496ac852a630ee1fb62466533")
      */
     @Test
     fun testExpectedClassInSkeletonClassMapWithDefaults() {

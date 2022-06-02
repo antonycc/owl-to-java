@@ -13,11 +13,10 @@ OWL to Java currently:
 
 # Bugs
 
-
+* *(a bulleted list of bugs)*
 
 # TODO
 
-* Unit tests for individual functions
 * Generate Schema.org library Jar with tests
 * Gradle Task
 * Kotlin idioms
@@ -212,6 +211,45 @@ internal class GenerateJavaSourceTest {
     }
 }
 ```
+
+# Contributions
+
+Owl to Java uses Trunk based Development https://www.flagship.io/git-branching-strategies/#trunk-based-development
+
+An alternate branching strategy is likely to be required when there are multiple committers. While a low volume of
+commits and committers remains we have two **paths to contribute to this project**:
+* Contact me via my GitHub profile (->website -> LinkedIn) and ask to be added to this project.
+* Fork the repository then create a pull request.
+
+## Request a feature
+
+To request a new feature:
+1. Add an item to the TODO list
+
+(see above for **paths to contribute to this project**).
+
+## Add a feature
+
+To add a new feature:
+1. Pick a feature from this `README.md`
+2. Create at least one test for the feature, cut and paste the TODO list item into the test comment
+3. Build using `gradle build`
+4. Commit code which passes `gradle clean check -PsafeBuildMode=false`
+5. Get the commit hash using `git rev-parse HEAD` and add it to the test KDoc.
+
+e.g.
+```kotlin
+    /**
+     *  Support all classes as the default
+     *  @since("Commit hash: e66cfd2dedd09bb496ac852a630ee1fb62466533")
+     */
+    @Test
+    fun testExpectedClassInSkeletonClassMapWithDefaults() {
+        // truncated...
+    }
+```
+
+
 
 # Licence
 
