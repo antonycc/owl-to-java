@@ -29,6 +29,11 @@
 		<rdfs:comment xml:lang="xx">A Class using a fictitious language code</rdfs:comment>
 		<rdfs:isDefinedBy rdf:resource="https://example.com/NoLang"/>
 	</owl:Class>
+	<!--owl:Class rdf:about="https://noname.example.com/">
+		<rdfs:label xml:lang="xx">NoNameLabel</rdfs:label>
+		<rdfs:comment xml:lang="xx">A Class without a path party of the URL</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="noname.example.com/"/>
+	</owl:Class-->
 	<owl:Class rdf:about="https://schema.org/Person">
 		<rdfs:label xml:lang="en">Person</rdfs:label>
 		<rdfs:subClassOf rdf:resource="https://schema.org/Thing"/>

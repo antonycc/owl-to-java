@@ -20,10 +20,13 @@ import uk.co.polycode.owltojava.JavaSourceBuilder
 import uk.co.polycode.owltojava.OwlParser
 import uk.co.polycode.owltojava.RegenerateOntologyTask
 import uk.co.polycode.owltojava.rdf.RdfDocument
+import java.io.BufferedReader
 import java.io.File
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.net.URI
 import java.net.URL
+import java.nio.file.Paths
 import java.time.ZonedDateTime
 import kotlin.test.Test
 import kotlin.test.assertNotNull
@@ -36,7 +39,7 @@ internal class GenerateJavaSourceTest {
     private val srcTestResources = ".${File.separator}src${File.separator}test${File.separator}resources"
     private val wholeOwlFilePath = srcTestResources.plus("${File.separator}schemaorg.owl")
     private val minimalOwlFilePath = srcTestResources.plus("${File.separator}schemaorg-minimal-person.owl")
-    //private val skeletonOwlFilePath = srcTestResources.plus("${File.separator}schemaorg-skeleton.owl")
+    private val skeletonOwlFilePath = srcTestResources.plus("${File.separator}schemaorg-skeleton.owl")
     private val javaSourceDirectoryPath = ".${File.separator}build${File.separator}generated-sources"
     private val javaBasePackage = "uk.co.polycode"
     private val licenceText = """
@@ -79,6 +82,44 @@ internal class GenerateJavaSourceTest {
     private val ignoredSuperclasses = listOf<String>(
         "http://www.w3.org/2000/01/rdf-schema#Class"
     )
+
+    @Test
+    fun testExpectClassNameFromId() {
+
+        // Expected results
+        val expectedClassName = "Person"
+        val expectedSuperclassName = "Thing"
+
+        // Setup
+        val owlFile = File(skeletonOwlFilePath)
+        val serializer: Serializer = Persister()
+        val workingDirectory = System.getProperty("user.dir")
+        logger.debug("Working Directory = ${workingDirectory}}")
+        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val owlParser = OwlParser(
+            rdfDocument = rdfDocument,
+            lang = lang,
+            classes = classes,
+            ignoredPropertyTypes = ignoredPropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes
+        )
+
+        // Execution
+        val ontologyClasses = owlParser.buildClassMap().filter { it.key.id !in primitivePropertyTypes.keys }
+        val owlExpectedClass = ontologyClasses.keys.firstOrNull { it.id.contains(expectedClassName) }
+        val owlExpectedProperties = ontologyClasses[owlExpectedClass]
+        assertNotNull(owlExpectedClass)
+        assertNotNull(owlExpectedProperties)
+        val actualClassName = JavaSourceBuilder.classNameForUri(URI(owlExpectedClass.id))
+        val actualSuperClassIds = owlExpectedClass.subClassesOf?.map {it.resource} ?: emptyList<String>()
+        val actualSuperclassName = JavaSourceBuilder.classNameForUri(URI(actualSuperClassIds.firstOrNull() ?: ""))
+        val nullString: String? = null
+
+        // Validation
+        assertTrue { nullString?.contains("this string is not evaluated") ?: true }
+        assertTrue { actualClassName.contains("${expectedClassName}") }
+        assertTrue { actualSuperclassName.contains("${expectedSuperclassName}") }
+    }
 
     @Test
     fun testExpectClassToBeGenerated() {
@@ -209,10 +250,10 @@ internal class GenerateJavaSourceTest {
     fun testJavaSourceFileInOutput() {
 
         // Expected results
-        val expectedClass = "Person"
-        var expectedOutputFile = javaSourceDirectoryPath
-        expectedOutputFile += "${File.separator}uk${File.separator}co${File.separator}polycode${File.separator}"
-        expectedOutputFile += "${File.separator}org${File.separator}schema${File.separator}${expectedClass}.java"
+        val expectedClassName = "Person"
+        val expectedSuperclassName = "Thing"
+        val expectedOutputFilePath = "${javaSourceDirectoryPath}/uk/co/polycode/org/schema/${expectedClassName}.java"
+        val expectedOutputFile = Paths.get(expectedOutputFilePath).toFile()
 
         // Setup
         val owlFile = File(wholeOwlFilePath)
@@ -247,8 +288,84 @@ internal class GenerateJavaSourceTest {
             ontologyClasses,
             javaSourceBuilder)
 
-        // Validation
-        val actualFile = File(expectedOutputFile)
-        assertTrue(actualFile.exists())
+        // Class validation
+        assertTrue(expectedOutputFile.exists())
+        var bufferedReader: BufferedReader = expectedOutputFile.bufferedReader()
+        var javaSourceFile = bufferedReader.use { it.readText() }
+        assertTrue { javaSourceFile.contains("public class ${expectedClassName}") }
+        assertTrue { javaSourceFile.contains(
+            "public class ${expectedClassName} extends ${expectedSuperclassName} {"
+        ) }
+        assertTrue { javaSourceFile.contains(
+            "public String isDefinedBy = \"https://schema.org/${expectedClassName}\";"
+        ) }
+        assertTrue { javaSourceFile.contains("public String additionalName;") }
+        assertTrue { javaSourceFile.contains("public PostalAddress address;") }
+        assertTrue { javaSourceFile.contains("public Person funder;") }
+        assertTrue { javaSourceFile.contains("public Organization funderOrganization;") }
+        assertTrue { javaSourceFile.contains("public ZonedDateTime birthDate;") }
+        assertTrue { javaSourceFile.contains("public String telephone;") }
+        assertTrue { javaSourceFile.contains("public QuantitativeValue weight;") }
+    }
+
+    @Test
+    fun testJavaSourceFileInOutputWithPrimitives() {
+
+        // Expected results
+        val className = "Place"
+        val outputFileWithPrimitivesPath = "${javaSourceDirectoryPath}/uk/co/polycode/org/schema/${className}.java"
+        val outputFileWithPrimitives = Paths.get(outputFileWithPrimitivesPath).toFile()
+
+        // Setup
+        val owlFile = File(wholeOwlFilePath)
+        val serializer: Serializer = Persister()
+        val workingDirectory = System.getProperty("user.dir")
+        logger.debug("Working Directory = ${workingDirectory}}")
+        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val owlParser = OwlParser(
+            rdfDocument = rdfDocument,
+            lang = lang,
+            classes = classes,
+            ignoredPropertyTypes = ignoredPropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes
+        )
+        val javaSourceBuilder = JavaSourceBuilder(
+            lang = lang,
+            javaBasePackage = javaBasePackage,
+            licenceText = licenceText,
+            desiredClasses = classes,
+            primitivePropertyTypes = primitivePropertyTypes,
+            prunedPropertyTypes = prunedPropertyTypes,
+            ignoredSuperclasses = ignoredSuperclasses
+        )
+
+        // Execution
+        val ontologyClasses = owlParser.buildClassMap().filter { it.key.id !in primitivePropertyTypes.keys }
+        val outputDir = File(javaSourceDirectoryPath)
+        RegenerateOntologyTask.writeClassMapAsJavaSource(
+            javaSourceDirectoryPath,
+            outputDir,
+            javaBasePackage,
+            ontologyClasses,
+            javaSourceBuilder)
+
+        // Primitive validation
+        assertTrue(outputFileWithPrimitives.exists())
+        var bufferedReader: BufferedReader = outputFileWithPrimitives.bufferedReader()
+        var javaSourceFile = bufferedReader.use { it.readText() }
+        assertTrue { javaSourceFile.contains("public class ${className}") }
+        assertTrue { javaSourceFile.contains(
+            "public String isDefinedBy = \"https://schema.org/${className}\";"
+        ) }
+        assertTrue { javaSourceFile.contains("public GeoShape geoGeoShape;") }
+        assertTrue { javaSourceFile.contains("public PostalAddress address;") }
+        assertTrue { javaSourceFile.contains("public DefinedTerm keywords;") }
+        assertTrue { javaSourceFile.contains("public BigDecimal latitude;") }
+        assertTrue { javaSourceFile.contains("public BigDecimal longitude;") }
+        assertTrue { javaSourceFile.contains("public OpeningHoursSpecification openingHoursSpecification;") }
+        assertTrue { javaSourceFile.contains("public Photograph photo;") }
+        assertTrue { javaSourceFile.contains("public ImageObject photoImageObject;") }
+        assertTrue { javaSourceFile.contains("public BigInteger maximumAttendeeCapacity;") }
+        assertTrue { javaSourceFile.contains("public Boolean publicAccess;") }
     }
 }

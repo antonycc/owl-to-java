@@ -41,6 +41,8 @@ tasks {
     // Regenerate Java classes for schema.org using the OWL schema
     val regenerate by registering(RegenerateOntologyTask::class) {
         outputs.upToDateWhen { false }
+        // TODO: Build a path in a POSIX style string interpolation and build for current platform
+        //e.g. val srcMain = Paths.get("projectDir/src/main").absolutePath()
         val srcMain = "".plus(projectDir).plus(File.separator).plus("src").plus(File.separator).plus("main")
         //val sourceFileName = "schemaorg-minimal-person.owl"
         val sourceFileName = "schemaorg.owl"

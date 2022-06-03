@@ -27,6 +27,16 @@ OWL to Java currently:
 * Handling of plurals as collections e.g. Person.parent is a relationship with multiplicity
 * Profiling
 * Load configuration set by name e.g. (com.example.OwlToJavaConfigSetSchemaOrg.setTaskConfig(this))
+* Load configuration from Kotlin Script: https://kotlinexpertise.com/run-kotlin-scripts-from-kotlin-programs/
+e.g.
+```kotlin
+val script = compile("""listOf(1,2,3).joinToString(":")""")
+assertEquals(listOf(1, 2, 3).joinToString(":"), script.eval())
+
+val regenerate by registering(RegenerateOntologyTask::class) {
+    compile(File(Paths.get("${projectDir}/owl2java-schema.org.config").absolutePath()).load()).eval(this)
+}
+```
 * Minimal JDK version for running + configurable and comparable
 * Command-line execution from a shaded Jar
 * Command-line execution from a Docker container

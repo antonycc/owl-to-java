@@ -118,7 +118,6 @@ open class JavaSourceBuilder(
 
     companion object {
 
-        private const val unknownPackageName = "unknown.package"
         private const val unknownClassName = "UnknownClass"
 
         fun addJavaFieldsForAdditionalSuperclasses(
@@ -209,7 +208,7 @@ open class JavaSourceBuilder(
                 }
         }
 
-        fun fieldTypeForOwlProperty(
+        private fun fieldTypeForOwlProperty(
                 javaBasePackage: String,
                 type: OwlClassRef,
                 primitivePropertyTypes: Map<String, String>
@@ -219,60 +218,57 @@ open class JavaSourceBuilder(
             else
                 ClassName.bestGuess(fullyQualifiedNameForPackageAndUri(javaBasePackage, type))
 
-        fun selectType(
+        private fun selectType(
                 fieldTypes: List<OwlClassRef>,
                 desiredClasses: List<String>,
                 prunedPropertyTypes: List<String>): OwlClassRef? =
-            if (fieldTypes.isEmpty())
-                null
-            else if (fieldTypes.size > 1 && fieldTypes.any { it.id in desiredClasses })
-            // First look for ones that match the desired classes list and select the first matching that list
-                fieldTypes.find {
-                        fieldType -> fieldType.id == desiredClasses.firstOrNull {
-                        desiredClass -> desiredClass in fieldTypes.map { it.id }
-                    }
-                }
-            else if (fieldTypes.size > 1 && fieldTypes.any { it.id !in prunedPropertyTypes })
-            // Next try the first in the owl list that isn't pruned (e.g. text is pruned in favour of objects)
-                fieldTypes.firstOrNull { fieldType -> fieldType.id !in prunedPropertyTypes }
-            else
-            // Or the first in the owl list which might be a list of 1 and even 1 Text type.
-                fieldTypes.firstOrNull()
+                fieldTypes
+                    .firstOrNull { it.id in desiredClasses }
+                    ?: fieldTypes.firstOrNull { it.id !in prunedPropertyTypes }
+                    ?: fieldTypes.firstOrNull()
 
         fun selectSuperclass(desiredClasses: List<String>, javaSuperclasses: List<RdfsResource>): RdfsResource? =
-            if (javaSuperclasses.isEmpty())
-                null
-            else if (javaSuperclasses.size > 1 && javaSuperclasses.any { it.resource in desiredClasses })
-            // First look for ones that match the desired classes list and select the first matching that list
-                javaSuperclasses.find { superclass -> superclass.resource == desiredClasses.firstOrNull {
-                        desiredClass -> desiredClass in javaSuperclasses.map { it.resource }
+            javaSuperclasses
+                .firstOrNull { it.resource in desiredClasses }
+                ?: javaSuperclasses.firstOrNull()
+
+        fun fullyQualifiedNameForPackageAndUri(javaBasePackage: String, type: OwlClassRef) =
+            "${javaBasePackage}.${hostnameToJavaPackage(URI(type.id).host)}.${classNameForUri(URI(type.id))}"
+
+        fun hostnameToJavaPackage(host: String) =
+            host.split(".").reversed().joinToString(".")
+
+       // fun classNameForUri(uri: URI) =
+       //     toTitleCase(uri.path)
+
+        fun classNameForUri(uri: URI) =
+            if ( "/" !in uri.path )
+                toTitleCase(uri.path)
+            else
+                uri.path
+                    .split("/")
+                    //.onEach { logger.info { it } }
+                    .filter { it.isNotBlank() }
+                    .reduce() { name, pathElement ->
+                        name.plus(toTitleCase(pathElement))
                     }
-                }
-            else
-            // Or the first in the owl list which might be a list of 1.
-                javaSuperclasses.firstOrNull()
 
-        fun fullyQualifiedNameForPackageAndUri(javaBasePackage: String, type: OwlClassRef?) =
-            if (type == null)
-                "${javaBasePackage}.$unknownPackageName"
-            else
-                "${javaBasePackage}.${hostnameToJavaPackage(URI(type.id).host)}.${classNameForUri(URI(type.id))}"
+        // TODO: Find out why the reduce is never run.
+        //fun classNameForUri(uri: URI) =
+        //        uri.path
+        //            .split("/")
+        //            //.onEach { logger.info { it } }
+        //            .filter { it.isNotBlank() }
+        //            .reduce() { name, pathElement ->
+        //                name.plus(toTitleCase(pathElement))
+        //            }
 
-        fun hostnameToJavaPackage(host: String) = host.split(".").reversed().joinToString(".")
+        // TODO: Find out why replaceFirstChar doesn't work
+        // https://tedblob.com/kotlin-string-first-character-uppercase/
+        private fun toTitleCase(pathElement: String) = ""
+            .plus(pathElement.toUpperCase().subSequence(IntRange(0, 0)))
+            .plus(pathElement.toLowerCase().subSequence(IntRange(1, pathElement.length - 1)))
 
-        fun classNameForUri(uri: URI): String? {
-            val className = uri.path
-                .split("/")
-                .filter { it.isNotBlank() }
-                .reduce() { name, pathElement ->
-                    name
-                        .plus(pathElement.toUpperCase().subSequence(IntRange(0, 0)))
-                        .plus(pathElement.toLowerCase().subSequence(IntRange(1, pathElement.length - 1)))
-                }
-            return if (className.isNotBlank())
-                className.replaceFirst(className[0], className[0].toUpperCase())
-            else
-                unknownClassName
-        }
     }
+
 }
