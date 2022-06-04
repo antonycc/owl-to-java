@@ -17,33 +17,37 @@ OWL to Java currently:
 
 # TODO
 
-* Generate Schema.org library Jar with tests
 * Gradle Task
-* Kotlin idioms
-* Versioning policy, auto increment and release.
-* Command-line execution from a shaded Jar
-* RDBMS annotations + relational example
-* Graph DB annotations + graph example
-* Command line Examples
 * Gradle Examples
-* Graphical viewer
+* Graph DB annotations + graph example
+* Graphical viewer + example
+* Versioning policy, auto increment and release.
 * License dependency extraction
-* Automate library updates
-* Contributor guidelines
-* Publish Detekt and Kover reports from the Quality Report Build
 * Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
-* Java Docs
-* Public website featuring API based generation and a viewer
+* Separate project with ready to use Schema.org library Jar
+* **Publish: Release 1.0.0 to GitHub packages**
+* KDoc for code
+* Java Docs for output
+* Public website
+* Publish Detekt and Kover reports from the Quality Report Build
+* Consider progress against additional GitHub README badges.
 * GitHub and public website analytics
 * Donate option (linked to hosting account)
-* **Release version 1.0.0 to Maven Central**
+* Automate library updates
+* Contributor guidelines
+* **Library Launch: Release to Maven Central**
+* Command-line execution from a shaded Jar
+* RDBMS annotations + relational example
+* Command line Examples
 * Command-line execution from a Docker container
 * Release to DockerHub
-* Profiling
 * HATEOAS REST API
 * API docs with runnable swagger
 * REST API examples
 * Text based viewer
+* **Platform Launch: API based generation and viewer**
+* Kotlin idioms
+* Profiling
 * Inheritance by interface (via Lombok, or better in Kotlin?) and aggregation
 * Handling of plurals as collections e.g. Person.parent is a relationship with multiplicity
 * Load configuration set by name e.g. (com.example.OwlToJavaConfigSetSchemaOrg.setTaskConfig(this))

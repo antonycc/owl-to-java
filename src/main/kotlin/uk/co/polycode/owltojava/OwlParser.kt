@@ -37,7 +37,7 @@ class OwlParser(
 
         // Iterate through the map
         //      creating classes for any properties that have a class ref
-        //      replace the classref with with a class
+        //      replace the OwlClassRef with an OwlClass
         // While there are properties with a classRef
         var undefinedCount: Int
         do {
@@ -136,10 +136,6 @@ class OwlParser(
         return listOf(rdfDocument.owlObjectProperties,rdfDocument.owlDataTypeProperties)
             .flatten()
             .filter { owlClass.id in domainClassIdsForProperty(it) }
-            //.filter { owlProperty ->
-            //            owlProperty.domain.isNotEmpty()
-            //            && owlClass.id in owlProperty.domain.first().classUnion.unionOf.classes.map { it.id }
-            //}
             .filter { owlProperty: OwlProperty -> !owlProperty.supersededBy.any { it.resource !in availableClassIds} }
             .map { it.withFieldTypes(fieldTypesForOwlProperty(it)) }
     }
@@ -167,13 +163,12 @@ class OwlParser(
 
         // If the last three characters of the field name match a pruned type use it.
         // (e.g. "url" in "myUrl" or "ext" in "myText")
-        val fieldName = owlProperty.fieldNameForOwlProperty()
-        val fieldTypesPrunedMatchingEndOfFieldName = prunedFieldTypes
+        // Otherwise return the first (least disliked) of the pruned types
+        // If there are no pruned types return the full list of types for the object property
+        val fieldName = owlProperty.id.substringAfterLast("/") // owlProperty.fieldNameForOwlProperty()
+        return prunedFieldTypes
             .filter { it.id.endsWith(fieldName.takeLast(typeFuzzyMatchLast), true) }
-        return fieldTypesPrunedMatchingEndOfFieldName.ifEmpty {
-            prunedFieldTypes
-                .filter { prunedPropertyTypes.isNotEmpty() && it.id == prunedPropertyTypes.first() }
-                .ifEmpty { fieldTypes }
-        }
+            .ifEmpty { prunedFieldTypes.filter { it.id == prunedPropertyTypes.firstOrNull() } }
+            .ifEmpty { fieldTypes }
     }
 }

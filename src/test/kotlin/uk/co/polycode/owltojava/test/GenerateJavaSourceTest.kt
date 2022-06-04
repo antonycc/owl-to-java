@@ -29,6 +29,7 @@ import java.net.URL
 import java.nio.file.Paths
 import java.time.ZonedDateTime
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -93,9 +94,11 @@ internal class GenerateJavaSourceTest {
 
         // Execution
         val actualClassName = JavaSourceBuilder.classNameForPath("${expectedClassName}")
+        val actualClassNameConverted = JavaSourceBuilder.toTitleCase(actualClassName.uppercase())
 
         // Validation
         assertTrue { actualClassName.contains("${expectedClassName}") }
+        assertEquals(actualClassNameConverted, expectedClassName)
     }
 
     @Test

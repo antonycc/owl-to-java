@@ -80,8 +80,6 @@ abstract class OwlProperty : OwlIdRef() {
         new.fieldTypes = fieldTypes
         return new
     }
-    public fun fieldNameForOwlProperty() =
-        id.substringAfterLast("/")
 
     // TODO: Find a better way to escape "$" on the class JavaDoc than using the string "DOLLAR"
     public fun commentsForOwlProperty(lang: String) =

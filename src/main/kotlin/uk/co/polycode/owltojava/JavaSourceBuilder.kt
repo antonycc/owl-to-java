@@ -118,7 +118,16 @@ open class JavaSourceBuilder(
 
     companion object {
 
-        private const val unknownClassName = "UnknownClass"
+        private val javaFieldModifiers = listOf(
+            "public",
+            "private",
+            "static",
+            "final",
+            "volatile",
+            "transient",
+            "abstract",
+            "var",
+            "val")
 
         fun addJavaFieldsForAdditionalSuperclasses(
             owlSuperclass: RdfsResource,
@@ -154,33 +163,39 @@ open class JavaSourceBuilder(
             desiredClasses: List<String>,
             prunedPropertyTypes: List<String>
         ) {
-            val fieldType = selectType(owlField.fieldTypes, desiredClasses, prunedPropertyTypes)
-            val fieldName = owlField.fieldNameForOwlProperty()
+            val primaryFieldType: OwlClassRef? = selectType(owlField.fieldTypes, desiredClasses, prunedPropertyTypes)
+            val fieldName = fieldNameForOwlPropertyId(owlField.id)
             val fieldComments = owlField.commentsForOwlProperty(lang)
-            val fieldTypeName =
-                if (fieldType != null)
-                    fieldTypeForOwlProperty(javaBasePackage, fieldType, primitivePropertyTypes)
-                else
-                    ClassName.bestGuess("${javaBasePackage}.${unknownClassName}")
-            if (fieldType == null){
-                val fieldNameForProperty = owlField.fieldNameForOwlProperty()
-                logger.warn("No field type found for Owl class: ${owlField.id} used by ${fieldNameForProperty}")
-            }
-            val fieldModifiers = listOf(
-                "public",
-                "private",
-                "static",
-                "final",
-                "volatile",
-                "transient",
-                "abstract",
-                "var",
-                "val")
-            val safeFieldName =
-                if (fieldName in fieldModifiers)
-                    "${fieldName}Field"
-                else
-                    fieldName
+            val fieldTypeName = fieldTypeForOwlProperty(javaBasePackage, primaryFieldType, primitivePropertyTypes)
+            addJavaField(javaClass, fieldTypeName, fieldName, fieldComments)
+            // Multiple type fields are split into separate fields
+            // e.g.
+            // public class CreativeWork extends Thing {
+            //    Person       creator;
+            //    Organization creatorOrganization;
+            owlField.fieldTypes
+                .filter { it.id != primaryFieldType?.id }
+                .forEach {
+                    val additionalFieldTypeName = fieldTypeForOwlProperty(javaBasePackage, it, primitivePropertyTypes)
+                    val additionalFieldName = fieldName + additionalFieldTypeName.toString().split(".").last()
+                    addJavaField(javaClass, additionalFieldTypeName, additionalFieldName, fieldComments)
+                }
+        }
+
+        private fun fieldNameForOwlPropertyId(id: String): String {
+            val fieldName = id.substringAfterLast("/")
+            return if (fieldName !in javaFieldModifiers)
+                fieldName
+            else
+                "${fieldName}Field"
+        }
+
+        private fun addJavaField(
+            javaClass: TypeSpec.Builder,
+            fieldTypeName: ClassName,
+            safeFieldName: String,
+            fieldComments: String
+        ) {
             javaClass.addField(
                 FieldSpec
                     .builder(fieldTypeName, safeFieldName)
@@ -188,32 +203,16 @@ open class JavaSourceBuilder(
                     .addJavadoc(fieldComments)
                     .build()
             )
-            // Multiple type fields are split into separate fields
-            // e.g.
-            // public class CreativeWork extends Thing {
-            //    Person       creator;
-            //    Organization creatorOrganization;
-            owlField.fieldTypes
-                .filter { it.id != fieldType?.id }
-                .forEach {
-                    val additionalFieldTypeName = fieldTypeForOwlProperty(javaBasePackage, it, primitivePropertyTypes)
-                    val additionalFieldName = fieldName + additionalFieldTypeName.toString().split(".").last()
-                    javaClass.addField(
-                        FieldSpec
-                            .builder(additionalFieldTypeName, additionalFieldName)
-                            .addModifiers(Modifier.PUBLIC)
-                            .addJavadoc(fieldComments)
-                            .build()
-                    )
-                }
         }
 
         private fun fieldTypeForOwlProperty(
                 javaBasePackage: String,
-                type: OwlClassRef,
+                type: OwlClassRef?,
                 primitivePropertyTypes: Map<String, String>
         ): ClassName =
-            if(type.id in primitivePropertyTypes.keys)
+            if(type == null)
+                ClassName.OBJECT
+            else if(type.id in primitivePropertyTypes.keys)
                 ClassName.bestGuess(primitivePropertyTypes[type.id])
             else
                 ClassName.bestGuess(fullyQualifiedNameForPackageAndUri(javaBasePackage, type))
@@ -238,41 +237,16 @@ open class JavaSourceBuilder(
         fun hostnameToJavaPackage(host: String) =
             host.split(".").reversed().joinToString(".")
 
-       // fun classNameForUri(uri: URI) =
-       //     toTitleCase(uri.path)
-
         fun classNameForUri(uri: URI) = classNameForPath(uri.path)
 
-        fun classNameForPath(path: String): String =
-            if ( "/" !in path )
-                toTitleCase(path)
-            else {
-                val pathElements = path
-                    .split("/")
-                    .filter { it.isNotBlank() }
-                val className = pathElements
-                    .reduce() { name, pathElement ->
-                        name.plus(classNameForPath(pathElement))
-                    }
-                className
-            }
+        fun classNameForPath(path: String) =
+            path
+                .split("/")
+                .filter { it.isNotBlank() }
+                .reduce() { name, pathElement -> name.plus(toTitleCase(pathElement)) }
 
-        // TODO: Find out why the reduce is never run.
-        //fun classNameForUri(uri: URI) =
-        //        uri.path
-        //            .split("/")
-        //            //.onEach { logger.info { it } }
-        //            .filter { it.isNotBlank() }
-        //            .reduce() { name, pathElement ->
-        //                name.plus(toTitleCase(pathElement))
-        //            }
-
-        // TODO: Find out why replaceFirstChar doesn't work
-        // https://tedblob.com/kotlin-string-first-character-uppercase/
-        private fun toTitleCase(pathElement: String) = ""
-            .plus(pathElement.uppercase().subSequence(IntRange(0, 0)))
-            .plus(pathElement.lowercase().subSequence(IntRange(1, pathElement.length - 1)))
-
+        fun toTitleCase(pathElement: String) =
+            pathElement.lowercase().replaceFirstChar { it.uppercase() }
     }
 
 }

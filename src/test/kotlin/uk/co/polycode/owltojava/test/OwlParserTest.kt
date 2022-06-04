@@ -85,7 +85,7 @@ internal class OwlParserTest {
             lang = lang,
             classes = classes,
             ignoredPropertyTypes = ignoredPropertyTypes,
-            prunedPropertyTypes = prunedPropertyTypes
+            prunedPropertyTypes = emptyList() // prunedPropertyTypes
             )
             .buildClassMap()
             .filter { it.key.id !in primitivePropertyTypes.keys }
