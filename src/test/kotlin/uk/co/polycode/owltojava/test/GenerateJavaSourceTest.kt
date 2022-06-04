@@ -84,6 +84,21 @@ internal class GenerateJavaSourceTest {
     )
 
     @Test
+    fun testExpectClassNameFromPath() {
+
+        // Expected results
+        val expectedClassName = "Person"
+
+        // Setup
+
+        // Execution
+        val actualClassName = JavaSourceBuilder.classNameForPath("${expectedClassName}")
+
+        // Validation
+        assertTrue { actualClassName.contains("${expectedClassName}") }
+    }
+
+    @Test
     fun testExpectClassNameFromId() {
 
         // Expected results
@@ -312,9 +327,9 @@ internal class GenerateJavaSourceTest {
     fun testJavaSourceFileInOutputWithPrimitives() {
 
         // Expected results
-        val className = "Place"
-        val outputFileWithPrimitivesPath = "${javaSourceDirectoryPath}/uk/co/polycode/org/schema/${className}.java"
-        val outputFileWithPrimitives = Paths.get(outputFileWithPrimitivesPath).toFile()
+        val expectedClass = "Place"
+        val outputFilePath = "${javaSourceDirectoryPath}/uk/co/polycode/org/schema/${expectedClass}.java"
+        val outputFile = Paths.get(outputFilePath).toFile()
 
         // Setup
         val owlFile = File(wholeOwlFilePath)
@@ -350,12 +365,12 @@ internal class GenerateJavaSourceTest {
             javaSourceBuilder)
 
         // Primitive validation
-        assertTrue(outputFileWithPrimitives.exists())
-        var bufferedReader: BufferedReader = outputFileWithPrimitives.bufferedReader()
+        assertTrue(outputFile.exists())
+        var bufferedReader: BufferedReader = outputFile.bufferedReader()
         var javaSourceFile = bufferedReader.use { it.readText() }
-        assertTrue { javaSourceFile.contains("public class ${className}") }
+        assertTrue { javaSourceFile.contains("public class ${expectedClass}") }
         assertTrue { javaSourceFile.contains(
-            "public String isDefinedBy = \"https://schema.org/${className}\";"
+            "public String isDefinedBy = \"https://schema.org/${expectedClass}\";"
         ) }
         assertTrue { javaSourceFile.contains("public GeoShape geoGeoShape;") }
         assertTrue { javaSourceFile.contains("public PostalAddress address;") }

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 // OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
 // Copyright (C) 2022  Antony Cartwright, Polycode Limited
 //
@@ -31,27 +33,27 @@ plugins {
     `kotlin-dsl`
     id("io.gitlab.arturbosch.detekt").version("1.20.0")
     id("org.jetbrains.kotlinx.kover").version("0.5.1")
+    //kotlin("jvm").version("1.6.21")
+    id("org.jetbrains.kotlin.jvm") version "1.7.0-RC2" // "1.5.31" // "1.6.21"
 }
 
-group = "com.example"
-version = "0.0.1-SNAPSHOT"
-
-java {
-    //sourceCompatibility = "18"
-    //targetCompatibility = "18"
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(18))
-        //languageVersion.set(KotlinVersion
+afterEvaluate {
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            apiVersion = "1.6"
+            languageVersion = "1.6"
+        }
     }
 }
 
-// TODO: Fix 'compileTestJava' task (current target is 18) and 'compileTestKotlin' task (current target is 1.8)
-//   jvm target compatibility should be set to the same Java version.
-//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-//    kotlinOptions {
-//        jvmTarget = "18"
-//    }
-//}
+group = "co.uk.polycode.owl2java"
+version = "0.0.1-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
 
 repositories {
     mavenCentral()
@@ -81,8 +83,6 @@ dependencies {
 
     // Testing
     testImplementation(kotlin("test"))
-    // Use JUnit Jupiter for testing.
-    //testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 
     // Static analysis
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.20.0")

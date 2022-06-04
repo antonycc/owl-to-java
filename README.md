@@ -20,15 +20,40 @@ OWL to Java currently:
 * Generate Schema.org library Jar with tests
 * Gradle Task
 * Kotlin idioms
+* Versioning policy, auto increment and release.
+* Command-line execution from a shaded Jar
+* RDBMS annotations + relational example
+* Graph DB annotations + graph example
+* Command line Examples
+* Gradle Examples
+* Graphical viewer
+* License dependency extraction
+* Automate library updates
+* Contributor guidelines
 * Publish Detekt and Kover reports from the Quality Report Build
-* Versioning policy, auto increment
-* @since versioned annotation on tests and auto-generated version history from test annotations
+* Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
+* Java Docs
+* Public website featuring API based generation and a viewer
+* GitHub and public website analytics
+* Donate option (linked to hosting account)
+* **Release version 1.0.0 to Maven Central**
+* Command-line execution from a Docker container
+* Release to DockerHub
+* Profiling
+* HATEOAS REST API
+* API docs with runnable swagger
+* REST API examples
+* Text based viewer
 * Inheritance by interface (via Lombok, or better in Kotlin?) and aggregation
 * Handling of plurals as collections e.g. Person.parent is a relationship with multiplicity
-* Profiling
 * Load configuration set by name e.g. (com.example.OwlToJavaConfigSetSchemaOrg.setTaskConfig(this))
 * Load configuration from Kotlin Script: https://kotlinexpertise.com/run-kotlin-scripts-from-kotlin-programs/
-e.g.
+* Extend one schema with another
+* @since versioned annotation on tests and auto-generated version history from test annotations
+
+
+
+Example of Kotlin script evaluation
 ```kotlin
 val script = compile("""listOf(1,2,3).joinToString(":")""")
 assertEquals(listOf(1, 2, 3).joinToString(":"), script.eval())
@@ -37,30 +62,6 @@ val regenerate by registering(RegenerateOntologyTask::class) {
     compile(File(Paths.get("${projectDir}/owl2java-schema.org.config").absolutePath()).load()).eval(this)
 }
 ```
-* Minimal JDK version for running + configurable and comparable
-* Command-line execution from a shaded Jar
-* Command-line execution from a Docker container
-* RDBMS annotations + relational example
-* Graph DB annotations + graph example
-* HATEOAS REST API
-* Extend one schema with another
-* API docs
-* Java Docs
-* Build example
-* Command line Examples
-* Gradle Examples
-* REST API examples
-* Text based viewer
-* Graphical viewer
-* License dependency extraction
-* Automate library updates
-* Contributor guidelines
-* Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
-* Public website featuring API based generation and a viewer
-* GitHub and public website analytics
-* Donate option (linked to hosting account)
-* Release to DockerHub
-* Release to Maven Central
 
 # See also
 

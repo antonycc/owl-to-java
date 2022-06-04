@@ -136,7 +136,7 @@ open class JavaSourceBuilder(
             if (additionalFieldName.isNotBlank()) {
                 val capitalisedFieldName = additionalFieldName.replaceFirst(
                     additionalFieldName[0],
-                    additionalFieldName[0].toLowerCase()
+                    additionalFieldName[0].lowercaseChar()
                 )
                 javaClass.addField(FieldSpec
                     .builder(additionalFieldTypeName, capitalisedFieldName)
@@ -241,17 +241,21 @@ open class JavaSourceBuilder(
        // fun classNameForUri(uri: URI) =
        //     toTitleCase(uri.path)
 
-        fun classNameForUri(uri: URI) =
-            if ( "/" !in uri.path )
-                toTitleCase(uri.path)
-            else
-                uri.path
+        fun classNameForUri(uri: URI) = classNameForPath(uri.path)
+
+        fun classNameForPath(path: String): String =
+            if ( "/" !in path )
+                toTitleCase(path)
+            else {
+                val pathElements = path
                     .split("/")
-                    //.onEach { logger.info { it } }
                     .filter { it.isNotBlank() }
+                val className = pathElements
                     .reduce() { name, pathElement ->
-                        name.plus(toTitleCase(pathElement))
+                        name.plus(classNameForPath(pathElement))
                     }
+                className
+            }
 
         // TODO: Find out why the reduce is never run.
         //fun classNameForUri(uri: URI) =
@@ -266,8 +270,8 @@ open class JavaSourceBuilder(
         // TODO: Find out why replaceFirstChar doesn't work
         // https://tedblob.com/kotlin-string-first-character-uppercase/
         private fun toTitleCase(pathElement: String) = ""
-            .plus(pathElement.toUpperCase().subSequence(IntRange(0, 0)))
-            .plus(pathElement.toLowerCase().subSequence(IntRange(1, pathElement.length - 1)))
+            .plus(pathElement.uppercase().subSequence(IntRange(0, 0)))
+            .plus(pathElement.lowercase().subSequence(IntRange(1, pathElement.length - 1)))
 
     }
 
