@@ -162,7 +162,7 @@ internal class GradleTaskTest {
 
     /**
      *  Gradle Task
-     *  @since("Commit hash: ")
+     *  @since("Commit hash: c616f30060a429080fb516d1eb715af20865ce28")
      */
     @Test
     fun testJavaSourceFileInOutputWithPrimitives() {
