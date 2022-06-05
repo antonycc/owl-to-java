@@ -31,6 +31,7 @@ logger.debug("Gradle logging is outputting at DEBUG.")
 
 plugins {
     `kotlin-dsl`
+    `maven-publish`
     id("io.gitlab.arturbosch.detekt").version("1.20.0")
     id("org.jetbrains.kotlinx.kover").version("0.5.1")
     //kotlin("jvm").version("1.6.21")
@@ -46,8 +47,20 @@ afterEvaluate {
     }
 }
 
-group = "co.uk.polycode.owl2java"
+group = "co.uk.polycode"
 version = "0.0.1-SNAPSHOT"
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "co.uk.polycode"
+            artifactId = "owltojava"
+            version = "0.0.1-SNAPSHOT"
+
+            from(components["java"])
+        }
+    }
+}
 
 java {
     toolchain {
@@ -63,9 +76,8 @@ repositories {
 dependencies {
 
     // All logging via SLF4J
-    implementation("org.slf4j:slf4j-api:1.7.25")
-    //implementation("ch.qos.logback:logback-classic:1.2.10")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.20"){
+    implementation("org.slf4j:slf4j-api:1.7.36")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21"){
         exclude("org.jetbrains.kotlin")
         exclude("org.slf4j")
     }
