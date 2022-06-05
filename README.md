@@ -17,7 +17,9 @@ OWL to Java currently:
 
 # TODO
 
-* Gradle Task
+* Separate project which runs the Owl2Java Gradle Task
+* Read and action IntelliJ README wanrings and tpyos
+* Gradle Task with default arguments
 * Gradle Examples
 * Graph DB annotations + graph example
 * Graphical viewer + example
