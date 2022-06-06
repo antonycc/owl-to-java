@@ -58,6 +58,7 @@ Results powered by Checkmarx(c)
 
 * Separate project with ready to use Schema.org library Jar
 * Gradle Task with default arguments
+* Sort fields in alphabetical order
 * Gradle Examples
 * Graph DB annotations + graph example
 * Graphical viewer + example
