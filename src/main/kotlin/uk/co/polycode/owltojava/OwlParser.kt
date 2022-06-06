@@ -32,8 +32,13 @@ class OwlParser(
     @field:Suppress("MagicNumber")
     private val typeFuzzyMatchLast = 3
 
+    // TODO: Consider if this could be improved by:
+    //  gathering all desired and necessary classes, de-duping, then translating to classes
     fun buildClassMap(): MutableMap<OwlClass,List<OwlProperty>> {
+        logger.debug { "Desired class list has ${classes.size} classes for the class map." }
         val classMap = createClassMapForClasses(classes.ifEmpty { rdfDocument.owlClasses.map { it.id } })
+
+        logger.debug { "Initial classMap has ${classMap.size} classes" }
 
         // Iterate through the map
         //      creating classes for any properties that have a class ref
@@ -41,13 +46,10 @@ class OwlParser(
         // While there are properties with a classRef
         var undefinedCount: Int
         do {
-            addClassesForClassRefs(classMap)
-
-            classMap
-                .forEach {
-                    classMap.put(it.key, mapClassRefsToClasses(classMap, it))
-                }
-
+            addClassesForFieldTypes(classMap)
+            logger.debug { "Classes in classMap after adding classes for fields: ${classMap.size}" }
+            transformAnyOwlClassRefsToOwlClasses(classMap)
+            logger.debug { "Classes in classMap after translating OwlClassRefs to OwlClasses: ${classMap.size}" }
             val allOwlPropertyClassesAfterUpdate = classMap
                 .values
                 .flatten()
@@ -62,6 +64,13 @@ class OwlParser(
         return classMap
     }
 
+    private fun transformAnyOwlClassRefsToOwlClasses(classMap: MutableMap<OwlClass, List<OwlProperty>>) {
+        classMap
+            .forEach {
+                classMap.put(it.key, mapClassRefsToClasses(classMap, it))
+            }
+    }
+
     private fun logMappingProgress(
         allOwlPropertyClassesAfterUpdate: List<OwlClassRef>,
         undefinedCount: Int
@@ -70,17 +79,23 @@ class OwlParser(
         logger.debug("Classes with an undefined OwlClassRef $undefinedCount vs a defined OwlClass $definedCount")
     }
 
-    private fun createClassMapForClasses(classesToMap: List<String>) =
-        appendSuperclasses(rdfDocument.owlClasses
+    // TODO: AppendSuperClasses looks awkward by wrapping the class list.
+    private fun createClassMapForClasses(classesToMap: List<String>): MutableMap<OwlClass, List<OwlProperty>> {
+        logger.debug { "There are ${classesToMap.size} classes to map to a list of fields" }
+        // TODO: Break this down and add classes for fields and superclasses separately
+        return appendSuperclasses(rdfDocument.owlClasses
             .filter { it.id in classesToMap })
             .associateWith { fieldsForClass(it) }
             .toMutableMap()
+    }
 
     private fun appendSuperclasses(currentClasses: List<OwlClass>): List<OwlClass> {
+        logger.debug { "There are ${currentClasses.size} classes to check for a superclass" }
         var requiredClasses = currentClasses
         var requiredClassIds = currentClasses.map { it.id }
         var addedClasses = requiredClasses.size
         var classesWithSuperclasses = requiredClasses.filter { it.subClassesOf?.isNotEmpty() ?: false }
+        logger.debug { "There are ${classesWithSuperclasses.size} classes classes with superclasses" }
         while (addedClasses > 0) {
             val superclassIds = classesWithSuperclasses
                 .asSequence()
@@ -92,26 +107,29 @@ class OwlParser(
             val superclasses = rdfDocument.owlClasses
                 .filter { it.id in superclassIds }
             addedClasses = superclasses.size
+            logger.debug { "Added ${addedClasses} for superclasses" }
             requiredClassIds = listOf(requiredClassIds, superclassIds).flatten()
             requiredClasses = listOf(requiredClasses, superclasses).flatten()
             classesWithSuperclasses = superclasses.filter { it.subClassesOf?.isNotEmpty() ?: false }
         }
+        logger.debug { "There are ${requiredClasses.size} classes required as desired classes and superclasses" }
         return requiredClasses
     }
 
-    private fun addClassesForClassRefs(classMap: MutableMap<OwlClass, List<OwlProperty>>) =
+    // TODO: Dedupe this list after flattening and check any other usages of flatten
+    private fun addClassesForFieldTypes(classMap: MutableMap<OwlClass, List<OwlProperty>>) =
         classMap
             .values
             .flatten()
             .map { it.fieldTypes }
             .flatten()
             .filter { it::class == OwlClassRef::class }
-            .forEach {
-                val owlClass = findClassForClassRef(rdfDocument.owlClasses, it)
+            .forEach {fieldType ->
+                val owlClass = findClassForClassRef(rdfDocument.owlClasses, fieldType)
                 if (owlClass != null) {
                     createClassMapForClasses(listOf(owlClass.id))
                         .forEach {
-                            classMap.put(it.key, it.value)
+                            classMap[it.key] = it.value
                         }
                 }
             }

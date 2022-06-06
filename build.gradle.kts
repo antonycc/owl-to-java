@@ -31,6 +31,7 @@ logger.debug("Gradle logging is outputting at DEBUG.")
 
 plugins {
     `kotlin-dsl`
+    `application`
     `maven-publish`
     id("io.gitlab.arturbosch.detekt").version("1.20.0")
     id("org.jetbrains.kotlinx.kover").version("0.5.1")
@@ -38,11 +39,17 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.0-RC2" // "1.5.31" // "1.6.21"
 }
 
+// From: https://stackoverflow.com/questions/56921833/kotlin-program-error-no-main-manifest-attribute-in-jar-file/61373175#61373175
+//application {
+//    mainClassName = "uk.co.polycode.owltojava.RegenerateOntologyCli"
+//}
+
 afterEvaluate {
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
             apiVersion = "1.6"
             languageVersion = "1.6"
+            jvmTarget = "1.8"
         }
     }
 }
@@ -68,6 +75,27 @@ java {
     }
 }
 
+tasks.withType<Jar> {
+    // Otherwise you'll get a "No main manifest attribute" error
+    //manifest {
+    //    attributes["Main-Class"] = "uk.co.polycode.owltojava.RegenerateOntologyCli"
+    //}
+
+    // To add all the dependencies otherwise a "NoClassDefFoundError" error
+    //from(sourceSets.main.get().output)
+
+    //dependsOn(configurations.runtimeClasspath)
+    //from({
+    //    configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    //})
+}
+
+//jar {
+//    manifest {
+//        attributes 'Main-Class': 'com.foo.bar.MainClass'
+//    }
+//}
+
 repositories {
     mavenCentral()
 }
@@ -92,6 +120,10 @@ dependencies {
 
     // Java source generation
     implementation("com.squareup:javapoet:1.13.0")
+
+    // Run as Jar in Java8+
+    //compile(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib-jdk8"))
 
     // Testing
     testImplementation(kotlin("test"))
