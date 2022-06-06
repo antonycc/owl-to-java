@@ -13,8 +13,39 @@ OWL to Java currently:
 * Includes Java class mappings to OWL and RDF elements.
 * Parses an OWL ontology into a map of java classes.
 * Generates Java source from an OWL ontology in a local file.
+* Runs as a Gradle Task
+* Creates Java Source that doesn't yet compile
 
 # Bugs
+
+* Generated source doesn't compile
+```text
+Compiling with JDK Java compiler API.
+/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/Offer.java:347: error: variable availabilityEndsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Offer
+  public ZonedDateTime availabilityEndsZonedDateTime;
+                       ^
+/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/Offer.java:362: error: variable availabilityStartsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Offer
+  public ZonedDateTime availabilityStartsZonedDateTime;
+                       ^
+/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/Demand.java:250: error: variable availabilityEndsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Demand
+  public ZonedDateTime availabilityEndsZonedDateTime;
+                       ^
+/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/Demand.java:265: error: variable availabilityStartsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Demand
+  public ZonedDateTime availabilityStartsZonedDateTime;
+                       ^
+/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/CssSelectorType.java:17: error: cannot find symbol
+public class CssSelectorType extends Text {
+                                     ^
+  symbol: class Text
+/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/XPathType.java:17: error: cannot find symbol
+public class XPathType extends Text {
+                               ^
+  symbol: class Text
+6 errors
+```
+* Perhaps if something extends Text and has no additional attributes, then it should be Text, 
+* otherwise it has a field:   var text: String
+* Count Matches expected: <2> but was: <1>
 
 * Dependency org.simpleframework:simple-xml:2.7.1 is vulnerable
 ```text
@@ -25,18 +56,17 @@ Results powered by Checkmarx(c)
 
 # TODO
 
-* Separate project which runs the Owl2Java Gradle Task
 * Separate project with ready to use Schema.org library Jar
-* Build with Java 18 
 * Gradle Task with default arguments
 * Gradle Examples
 * Graph DB annotations + graph example
 * Graphical viewer + example
-* Versioning policy, auto increment and release.
+* Versioning policy, auto-increment and release.
 * License dependency extraction
 * Customise POM with licence: https://docs.gradle.org/current/userguide/publishing_maven.html
 * Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
 See: https://stackoverflow.com/questions/24827733/how-do-you-set-the-maven-artifact-id-of-a-gradle-project
+* Build with Java 18
 * **Publish: Release 1.0.0 to GitHub packages**
 * KDoc for code
 * Java Docs for output
