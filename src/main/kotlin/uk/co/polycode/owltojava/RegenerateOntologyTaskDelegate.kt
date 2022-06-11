@@ -23,16 +23,16 @@ private val logger = KotlinLogging.logger {}
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-class RegenerateOntologyTaskDelegate(val lang: String,
-                                     val src: String,
+class RegenerateOntologyTaskDelegate(val src: String,
                                      val dest: String,
-                                     val javaBasePackage: String,
-                                     val licenceText: String,
-                                     val classes: List<String>,
-                                     val primitivePropertyTypes: Map<String, String>,
-                                     val ignoredPropertyTypes: List<String>,
-                                     val prunedPropertyTypes: List<String>,
-                                     val ignoredSuperclasses: List<String>) {
+                                     val javaBasePackage: String) {
+    var lang: String = "en"
+    var licenceText: String = ""
+    var classes: List<String> = listOf()
+    var primitivePropertyTypes: Map<String, String> = mapOf()
+    var ignoredPropertyTypes: List<String> = listOf()
+    var prunedPropertyTypes: List<String> = listOf()
+    var ignoredSuperclasses: List<String> = listOf()
 
     fun regenerateJavaSource(): Pair<File?, Map<OwlClass, List<OwlProperty>>> {
 
@@ -42,27 +42,25 @@ class RegenerateOntologyTaskDelegate(val lang: String,
         logger.info { "Read RDF Document with id ${rdfDocument.id} from ${src}" }
         logger.debug { "RDF Document has ${rdfDocument.owlClasses.size} classes" }
 
-        val ontologyClassesWithPrimitives = OwlParser(
-            rdfDocument = rdfDocument,
-            lang = lang,
-            classes = classes,
-            ignoredPropertyTypes = ignoredPropertyTypes,
-            prunedPropertyTypes = prunedPropertyTypes
-        ).buildClassMap()
+        val ontologyClassesWithPrimitives = OwlParser(rdfDocument = rdfDocument).also {
+            it.lang = this.lang
+            it.classes = this.classes
+            it.ignoredPropertyTypes = this.ignoredPropertyTypes
+            it.prunedPropertyTypes = this.prunedPropertyTypes
+        }.buildClassMap()
         val ontologyClasses = ontologyClassesWithPrimitives.filter { it.key.id !in primitivePropertyTypes.keys }
         logger.debug { "There are ${ontologyClassesWithPrimitives.size} classes in the classMap with primitives" }
         logger.debug { "There are ${ontologyClasses.size} classes in the classMap (after primitives were filtered)" }
 
         logger.info { "There are ${ontologyClasses.size} classes to write as Java source" }
-        val javaSourceBuilder = JavaSourceBuilder(
-            lang = lang,
-            javaBasePackage = javaBasePackage,
-            licenceText = licenceText,
-            desiredClasses = classes,
-            primitivePropertyTypes = primitivePropertyTypes,
-            prunedPropertyTypes = prunedPropertyTypes,
-            ignoredSuperclasses = ignoredSuperclasses
-        )
+        val javaSourceBuilder = JavaSourceBuilder(javaBasePackage = javaBasePackage).also {
+            it.lang = this.lang
+            it.licenceText = this.licenceText
+            it.desiredClasses = this.classes
+            it.primitivePropertyTypes = this.primitivePropertyTypes
+            it.prunedPropertyTypes = this.prunedPropertyTypes
+            it.ignoredSuperclasses = this.ignoredSuperclasses
+        }
 
         val javaSourceWriter = JavaSourceWriter()
         val outputDir = javaSourceWriter.outputJavaClasses(dest, ontologyClasses, javaSourceBuilder)

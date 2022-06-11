@@ -23,6 +23,7 @@ internal class LoggingLevelReportTest {
 
     @Test
     fun testLogger() {
+        logger.info("The current working directory is: ${System.getProperty("user.dir")}}")
         logger.trace("Test logged using SLF4J API at level: Trace")
         logger.debug("Test logged using SLF4J API at level: Debug")
         logger.info("Test logged using SLF4J API at level: Info")

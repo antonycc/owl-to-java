@@ -1,14 +1,11 @@
 package uk.co.polycode.owltojava
 
-//import mu.KotlinLogging
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import java.io.File
-
-//private val logger = KotlinLogging.logger {}
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
@@ -25,43 +22,37 @@ import java.io.File
  */
 abstract class RegenerateOntologyTask : DefaultTask() {
 
-    @get:Input
-    abstract var lang: String
-
+    // TODO: use InputFile
     @get:Input
     abstract var src: String
 
-    // TODO: Should be optional (logs to info with no output dir)
+    // TODO: use InputDir (?)
     @get:Input
     abstract var dest: String
 
-    // TODO: Should be optional
     @get:Input
     abstract var javaBasePackage: String
 
-    // TODO: Should be optional
     @get:Input
-    abstract var licenceText: String
+    abstract var lang: String?
 
-    // TODO: Should be optional
     @get:Input
-    abstract var classes: List<String>
+    abstract var licenceText: String?
 
-    // TODO: Should be optional
     @get:Input
-    abstract var primitivePropertyTypes: Map<String, String>
+    abstract var classes: List<String>?
 
-    // TODO: Should be optional
     @get:Input
-    abstract var ignoredPropertyTypes: List<String>
+    abstract var primitivePropertyTypes: Map<String, String>?
 
-    // TODO: Should be optional
     @get:Input
-    abstract var prunedPropertyTypes: List<String>
+    abstract var ignoredPropertyTypes: List<String>?
 
-    // TODO: Should be optional
     @get:Input
-    abstract var ignoredSuperclasses: List<String>
+    abstract var prunedPropertyTypes: List<String>?
+
+    @get:Input
+    abstract var ignoredSuperclasses: List<String>?
 
     @get:OutputDirectory
     @Optional
@@ -71,20 +62,20 @@ abstract class RegenerateOntologyTask : DefaultTask() {
     fun regenerate() {
         logger.info("Regenerating ontology from $src to $dest with base package $javaBasePackage")
 
-        val taskDelegate = RegenerateOntologyTaskDelegate(
-            lang = lang,
+        val (latestOutputDir, ontologyClasses) = RegenerateOntologyTaskDelegate(
             src = src,
             dest = dest,
-            javaBasePackage = javaBasePackage,
-            licenceText = licenceText,
-            classes = classes,
-            primitivePropertyTypes = primitivePropertyTypes,
-            ignoredPropertyTypes = ignoredPropertyTypes,
-            prunedPropertyTypes = prunedPropertyTypes,
-            ignoredSuperclasses = ignoredSuperclasses
-        )
-
-        val (latestOutputDir, ontologyClasses) = taskDelegate.regenerateJavaSource()
+            javaBasePackage = javaBasePackage)
+            .also {
+                it.lang = this.lang ?: it.lang
+                it.licenceText = this.licenceText ?: it.licenceText
+                it.classes = this.classes ?: it.classes
+                it.primitivePropertyTypes = this.primitivePropertyTypes ?: it.primitivePropertyTypes
+                it.ignoredPropertyTypes = this.ignoredPropertyTypes ?: it.ignoredPropertyTypes
+                it.prunedPropertyTypes = this.prunedPropertyTypes ?: it.prunedPropertyTypes
+                it.ignoredSuperclasses = this.ignoredSuperclasses ?: it.ignoredSuperclasses
+            }
+            .regenerateJavaSource()
         outputDir = latestOutputDir
 
         val classLabels = ontologyClasses.keys.map { it.labels }

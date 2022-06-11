@@ -1,12 +1,7 @@
 package uk.co.polycode.owltojava
 
 import mu.KotlinLogging
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import java.io.File
 
 private val logger = KotlinLogging.logger {}
 
@@ -42,20 +37,20 @@ class RegenerateOntologyCli {
         logger.info("OWL to Java with args: ${args}")
         logger.info("Regenerating ontology from ${src} to ${dest} with base package ${javaBasePackage}")
 
-        val taskDelegate = RegenerateOntologyTaskDelegate(
-            lang = lang,
+        val (_, ontologyClasses) = RegenerateOntologyTaskDelegate(
             src = src,
             dest = dest,
-            javaBasePackage = javaBasePackage,
-            licenceText = licenceText,
-            classes = classes,
-            primitivePropertyTypes = primitivePropertyTypes,
-            ignoredPropertyTypes = ignoredPropertyTypes,
-            prunedPropertyTypes = prunedPropertyTypes,
-            ignoredSuperclasses = ignoredSuperclasses
-        )
-
-        val (_, ontologyClasses) = taskDelegate.regenerateJavaSource()
+            javaBasePackage = javaBasePackage)
+            .also {
+                it.lang = this.lang
+                it.licenceText = this.licenceText
+                it.classes = this.classes
+                it.primitivePropertyTypes = this.primitivePropertyTypes
+                it.ignoredPropertyTypes = this.ignoredPropertyTypes
+                it.prunedPropertyTypes = this.prunedPropertyTypes
+                it.ignoredSuperclasses = this.ignoredSuperclasses
+            }
+            .regenerateJavaSource()
 
         val classLabels = ontologyClasses.keys.map { it.labels }
         logger.info("Created ${ontologyClasses.size} Java classes for the following " +

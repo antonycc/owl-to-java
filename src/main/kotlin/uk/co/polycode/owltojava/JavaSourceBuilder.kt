@@ -28,14 +28,14 @@ private val logger = KotlinLogging.logger {}
  * Mozilla Public License, v. 2.0 for more details.
  */
 open class JavaSourceBuilder(
-    var lang: String,
-    var javaBasePackage: String,
-    var licenceText: String,
-    var desiredClasses: List<String>,
-    var primitivePropertyTypes: Map<String, String>,
-    var prunedPropertyTypes: List<String>,
-    var ignoredSuperclasses: List<String>
+    var javaBasePackage: String
 ) {
+    var lang: String = "en"
+    var licenceText: String = ""
+    var desiredClasses: List<String> = emptyList()
+    var primitivePropertyTypes: Map<String, String> = mapOf()
+    var prunedPropertyTypes: List<String> = listOf()
+    var ignoredSuperclasses: List<String> = listOf()
 
     fun build(owlClass: OwlClass, owlProperties: List<OwlProperty>): String {
 
@@ -244,6 +244,23 @@ open class JavaSourceBuilder(
                 .split("/")
                 .filter { it.isNotBlank() }
                 .reduce() { name, pathElement -> name.plus(toTitleCase(pathElement)) }
+                .firstDigitToString()
+
+        // TODO: Move to a map
+        private fun String.firstDigitToString() = if( this.isNotBlank() && this[0].isDigit() )
+                this
+                    .replace("1","One")
+                    .replace("2","Two")
+                    .replace("3","Three")
+                    .replace("4","Four")
+                    .replace("5","Five")
+                    .replace("6","Six")
+                    .replace("7","Seven")
+                    .replace("8","Eight")
+                    .replace("9","Nine")
+                    .replace("0","Zero")
+            else
+                this
 
         fun toTitleCase(pathElement: String) =
             pathElement.lowercase().replaceFirstChar { it.uppercase() }

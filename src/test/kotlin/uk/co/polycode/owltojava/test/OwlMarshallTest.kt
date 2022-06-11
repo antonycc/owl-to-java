@@ -1,22 +1,11 @@
 package uk.co.polycode.owltojava.test
 
-import mu.KotlinLogging
-import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
-import org.slf4j.impl.StaticLoggerBinder
-import uk.co.polycode.owltojava.OwlParser
 import uk.co.polycode.owltojava.rdf.RdfDocument
-import java.io.File
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.net.URL
-import java.time.ZonedDateTime
+import java.nio.file.Paths
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-
-private val logger = KotlinLogging.logger {}
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
@@ -33,8 +22,8 @@ private val logger = KotlinLogging.logger {}
  */
 internal class OwlMarshallTest {
 
-    private val srcTestResources = ".${File.separator}src${File.separator}test${File.separator}resources"
-    private val skeletonOwlFilePath = srcTestResources.plus("${File.separator}schemaorg-skeleton.owl")
+    private val srcTestResources = "./src/test/resources"
+    private val skeletonOwlFilePath = Paths.get("${srcTestResources}/schemaorg-skeleton.owl")
 
     @Test
     fun testExpectedOntologyWithClasses() {
@@ -43,12 +32,11 @@ internal class OwlMarshallTest {
         val expectedId = "https://schema.org/"
 
         // Setup
-        val owlFile = File(skeletonOwlFilePath)
-        val serializer: Serializer = Persister()
 
         // Execution
-        logger.debug("Working Directory = ${System.getProperty("user.dir")}}")
-        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val rdfDocument: RdfDocument = with(skeletonOwlFilePath.toFile()){
+            Persister().read(RdfDocument::class.java, this, false)
+        }
 
         // Validation
         assertEquals(expectedId, rdfDocument.id)

@@ -29,6 +29,7 @@ open class JavaSourceWriter {
         javaSourceBuilder: JavaSourceBuilder
     ): File? {
         val latestOutputDir =
+            // TODO: outputDirFilepath isn't actually optional at the Task level, make it optional or remove this
             if (outputDirFilepath.isNotBlank() && outputDirFilepath != "INFO")
                 File(outputDirFilepath)
             else
@@ -56,11 +57,9 @@ open class JavaSourceWriter {
                 val javaSource = javaSourceBuilder.build(it.key, it.value)
                 val javaFullyQualifiedName =
                     JavaSourceBuilder.fullyQualifiedNameForPackageAndUri(javaSourceBuilder.javaBasePackage, it.key)
-                    val packageDir = appendAndCreatePackageDir(dest, javaFullyQualifiedName)
-                    File("${packageDir}${JavaSourceBuilder.classNameForUri(URI(it.key.id))}.java")
-                        .printWriter().use { out ->
-                            out.println(javaSource)
-                        }
+                val packageDir = appendAndCreatePackageDir(dest, javaFullyQualifiedName)
+                File("${packageDir}${JavaSourceBuilder.classNameForUri(URI(it.key.id))}.java")
+                    .printWriter().use { out -> out.println(javaSource) }
             }
     }
 

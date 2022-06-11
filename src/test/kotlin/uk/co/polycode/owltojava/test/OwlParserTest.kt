@@ -1,14 +1,11 @@
 package uk.co.polycode.owltojava.test
 
-import mu.KotlinLogging
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.simpleframework.xml.core.Persister
 import uk.co.polycode.owltojava.rdf.*
 import uk.co.polycode.owltojava.*
 import java.nio.file.Paths
-
-private val logger = KotlinLogging.logger {}
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
@@ -68,7 +65,6 @@ internal class OwlParserTest {
         val expectedNumberOfClasses = 1
 
         // Setup
-        logger.debug("Working Directory = ${System.getProperty("user.dir")}}")
         val rdfDocument: RdfDocument = with(skeletonOwlFilePath.toFile()){
             Persister().read(RdfDocument::class.java, this, false)
         }
