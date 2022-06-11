@@ -13,9 +13,7 @@ import java.net.URL
 import java.nio.file.Paths
 import java.time.ZonedDateTime
 import java.util.regex.Pattern
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 private val logger = KotlinLogging.logger {}
 
@@ -334,8 +332,18 @@ internal class GradleTaskTest {
         // Validation
         assertEquals(0, countMatches(sampleString, Pattern.compile(expectedNoMatch)))
         assertEquals(1, countMatches(sampleString, Pattern.compile(expectedOneMatch)))
+        assertEquals(0, countMatches(expectedNoMatch, Pattern.compile(expectedOneMatch)))
         // TODO: Bug - count matches doesn't work
         //  assertEquals(2, countMatches(sampleString, Pattern.compile(expectedTwoMatch)))
+
+        //val s: String? = null
+        //assertFalse("The null operator should evaluate to null, so the Elvis operator finds the false")
+        //{ s?.contains("abc") ?: false }
+        //assertFalse("The null operator should evaluate to null, so the Elvis operator finds \"xyz\"")
+        //{ "abc".contains(s?.toString() ?: "xyz") }
+        //fun String.id() = toString()
+        //assertFalse("The null operator should evaluate to null, so the Elvis operator finds \"xyz\"")
+        //{ "abc".contains(s?.id() ?: "xyz") }
     }
 
     private fun countMatches(s: String, pattern: Pattern) =

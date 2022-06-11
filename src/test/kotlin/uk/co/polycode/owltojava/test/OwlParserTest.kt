@@ -3,16 +3,10 @@ package uk.co.polycode.owltojava.test
 import mu.KotlinLogging
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import org.simpleframework.xml.Serializer
 import org.simpleframework.xml.core.Persister
-import java.io.File
-
 import uk.co.polycode.owltojava.rdf.*
 import uk.co.polycode.owltojava.*
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.net.URL
-import java.time.ZonedDateTime
+import java.nio.file.Paths
 
 private val logger = KotlinLogging.logger {}
 
@@ -31,9 +25,9 @@ private val logger = KotlinLogging.logger {}
  */
 internal class OwlParserTest {
 
-    private val srcTestResources = ".${File.separator}src${File.separator}test${File.separator}resources"
-    private val minimalOwlFilePath = srcTestResources.plus("${File.separator}schemaorg-minimal-person.owl")
-    private val skeletonOwlFilePath = srcTestResources.plus("${File.separator}schemaorg-skeleton.owl")
+    private val srcTestResources = "./src/test/resources"
+    private val minimalOwlFilePath = Paths.get("${srcTestResources}/schemaorg-minimal-person.owl")
+    private val skeletonOwlFilePath = Paths.get("${srcTestResources}/schemaorg-skeleton.owl")
     private val lang = "en"
     private val classes = listOf(
         "https://schema.org/Person",
@@ -46,17 +40,17 @@ internal class OwlParserTest {
         "https://example.com/NoLang",
         "https://schema.org/Fake"
     )
-    private val primitivePropertyTypes = mapOf(
-        "https://schema.org/DataType" to Object::class.java.name,
-        "https://schema.org/Text"     to String::class.java.name,
-        "https://schema.org/Time"     to ZonedDateTime::class.java.name,
-        "https://schema.org/DateTime" to ZonedDateTime::class.java.name,
-        "https://schema.org/Date"     to ZonedDateTime::class.java.name,
-        "https://schema.org/URL"      to URL::class.java.name,
-        "https://schema.org/Integer"  to BigInteger::class.java.name,
-        "https://schema.org/Float"    to BigDecimal::class.java.name,
-        "https://schema.org/Number"   to BigDecimal::class.java.name,
-        "https://schema.org/Boolean"  to "java.lang.Boolean", // Boolean::class.java.name, unboxes to boolean.
+    private val primitivePropertyTypes = listOf(
+        "https://schema.org/DataType",
+        "https://schema.org/Text",
+        "https://schema.org/Time",
+        "https://schema.org/DateTime",
+        "https://schema.org/Date",
+        "https://schema.org/URL",
+        "https://schema.org/Integer",
+        "https://schema.org/Float",
+        "https://schema.org/Number",
+        "https://schema.org/Boolean"
     )
     private val ignoredPropertyTypes = listOf(
         "https://schema.org/Role"
@@ -74,21 +68,19 @@ internal class OwlParserTest {
         val expectedNumberOfClasses = 1
 
         // Setup
-        val owlFile = File(skeletonOwlFilePath)
-        val serializer: Serializer = Persister()
         logger.debug("Working Directory = ${System.getProperty("user.dir")}}")
-        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val rdfDocument: RdfDocument = with(skeletonOwlFilePath.toFile()){
+            Persister().read(RdfDocument::class.java, this, false)
+        }
 
         // Execution
-        val ontologyClasses = OwlParser(
-            rdfDocument = rdfDocument,
-            lang = lang,
-            classes = classes,
-            ignoredPropertyTypes = ignoredPropertyTypes,
-            prunedPropertyTypes = emptyList() // prunedPropertyTypes
-            )
+        val ontologyClasses = OwlParser(rdfDocument = rdfDocument).also {
+            it.lang = this.lang
+            it.classes = this.classes
+            it.ignoredPropertyTypes = this.ignoredPropertyTypes
+        }
             .buildClassMap()
-            .filter { it.key.id !in primitivePropertyTypes.keys }
+            .filter { it.key.id !in primitivePropertyTypes }
 
         // Validation
         val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size
@@ -107,15 +99,14 @@ internal class OwlParserTest {
         val expectedNumberOfClasses = 1
 
         // Setup
-        val owlFile = File(skeletonOwlFilePath)
-        val serializer: Serializer = Persister()
-        logger.debug("Working Directory = ${System.getProperty("user.dir")}}")
-        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val rdfDocument: RdfDocument = with(skeletonOwlFilePath.toFile()){
+            Persister().read(RdfDocument::class.java, this, false)
+        }
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument)
             .buildClassMap()
-            .filter { it.key.id !in primitivePropertyTypes.keys }
+            .filter { it.key.id !in primitivePropertyTypes }
 
         // Validation
         val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size
@@ -130,21 +121,19 @@ internal class OwlParserTest {
         val expectedNumberOfClasses = 1
 
         // Setup
-        val owlFile = File(minimalOwlFilePath)
-        val serializer: Serializer = Persister()
+        val rdfDocument: RdfDocument = with(minimalOwlFilePath.toFile()){
+            Persister().read(RdfDocument::class.java, this, false)
+        }
 
         // Execution
-        logger.debug("Working Directory = ${System.getProperty("user.dir")}}")
-        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
-        val ontologyClasses = OwlParser(
-            rdfDocument = rdfDocument,
-            lang = lang,
-            classes = classes,
-            ignoredPropertyTypes = ignoredPropertyTypes,
-            prunedPropertyTypes = prunedPropertyTypes
-        )
+        val ontologyClasses = OwlParser(rdfDocument = rdfDocument).also {
+            it.lang = this.lang
+            it.classes = this.classes
+            it.ignoredPropertyTypes = this.ignoredPropertyTypes
+            it.prunedPropertyTypes = this.prunedPropertyTypes
+        }
             .buildClassMap()
-            .filter { it.key.id !in primitivePropertyTypes.keys }
+            .filter { it.key.id !in primitivePropertyTypes }
 
         // Validation
         val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size
@@ -159,21 +148,14 @@ internal class OwlParserTest {
         val expectedNumberOfClasses = 1
 
         // Setup
-        val owlFile = File(minimalOwlFilePath)
-        val serializer: Serializer = Persister()
+        val rdfDocument: RdfDocument = with(minimalOwlFilePath.toFile()){
+            Persister().read(RdfDocument::class.java, this, false)
+        }
 
         // Execution
-        logger.debug("Working Directory = ${System.getProperty("user.dir")}}")
-        val rdfDocument: RdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
-        val ontologyClasses = OwlParser(
-            rdfDocument = rdfDocument,
-            lang = lang,
-            classes = classes,
-            ignoredPropertyTypes = ignoredPropertyTypes,
-            prunedPropertyTypes = prunedPropertyTypes
-        )
+        val ontologyClasses = OwlParser(rdfDocument = rdfDocument)
             .buildClassMap()
-            .filter { it.key.id !in primitivePropertyTypes.keys }
+            .filter { it.key.id !in primitivePropertyTypes }
 
         // Validation
         val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size

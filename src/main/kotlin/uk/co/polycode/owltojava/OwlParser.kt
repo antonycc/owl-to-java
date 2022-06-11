@@ -23,7 +23,7 @@ private val logger = KotlinLogging.logger {}
  */
 class OwlParser(
     private val rdfDocument: RdfDocument,
-    val lang: String = "en",
+    var lang: String = "en",
     var classes: List<String> = mutableListOf(),
     var ignoredPropertyTypes: List<String> = mutableListOf(),
     var prunedPropertyTypes: List<String> = mutableListOf()){
@@ -40,6 +40,7 @@ class OwlParser(
 
         logger.debug { "Initial classMap has ${classMap.size} classes" }
 
+        // TODO: Consider if a recursive version will be more expressive
         // Iterate through the map
         //      creating classes for any properties that have a class ref
         //      replace the OwlClassRef with an OwlClass
@@ -64,6 +65,7 @@ class OwlParser(
         return classMap
     }
 
+    // TODO: Do this with immutable lists
     private fun transformAnyOwlClassRefsToOwlClasses(classMap: MutableMap<OwlClass, List<OwlProperty>>) {
         classMap
             .forEach {
@@ -134,6 +136,7 @@ class OwlParser(
                 }
             }
 
+    // TODO: Do this with something immutable
     private fun mapClassRefsToClasses(classMap: MutableMap<OwlClass, List<OwlProperty>>,
                                       owlClassAndProperties: Map.Entry<OwlClass, List<OwlProperty>>) =
         owlClassAndProperties.value
@@ -147,16 +150,16 @@ class OwlParser(
     private fun findClassForClassRef(classList: List<OwlClass>, classRef: OwlClassRef) =
         classList.firstOrNull { it.id == classRef.id }
 
-    private fun fieldsForClass(owlClass: OwlClass): List<OwlProperty> {
-        val availableClassIds = rdfDocument.owlClasses
-            .map { availableClass: OwlClass -> availableClass.id }
-            .toHashSet()
-        return listOf(rdfDocument.owlObjectProperties,rdfDocument.owlDataTypeProperties)
-            .flatten()
-            .filter { owlClass.id in domainClassIdsForProperty(it) }
-            .filter { owlProperty: OwlProperty -> !owlProperty.supersededBy.any { it.resource !in availableClassIds} }
-            .map { it.withFieldTypes(fieldTypesForOwlProperty(it)) }
-    }
+    // TODO: Could we look up the class from the owlClass domain, instead of filtering all property types
+    private fun fieldsForClass(owlClass: OwlClass) //: List<OwlProperty>
+        = with(rdfDocument.owlClasses.map { it.id }.toHashSet()) {
+            listOf(rdfDocument.owlObjectProperties, rdfDocument.owlDataTypeProperties)
+                .flatten()
+                .filter { owlClass.id in domainClassIdsForProperty(it) }
+                .filter { owlProperty: OwlProperty -> !owlProperty.supersededBy.any { it.resource !in this } }
+                .map { it.withFieldTypes(fieldTypesForOwlProperty(it)) }
+        }
+
 
     private fun domainClassIdsForProperty(owlProperty: OwlProperty) =
         owlProperty.domain
@@ -171,22 +174,19 @@ class OwlParser(
             .flatten()
             .filter { it.id !in ignoredPropertyTypes }
             .filter { it.id in rdfDocument.owlClasses.map { definedClass -> definedClass.id } }
+        // If any of the field types are not in the pruned types, return this list
+        return fieldTypes.filter { it.id !in prunedPropertyTypes }.ifEmpty {
+            val prunedFieldTypes = fieldTypes.filter { it.id in prunedPropertyTypes }
 
-        val fieldTypesWithoutPrunedTypes = fieldTypes.filter { it.id !in prunedPropertyTypes }
-        if ( fieldTypesWithoutPrunedTypes.isNotEmpty() ) {
-            return fieldTypesWithoutPrunedTypes
+            // If the last three characters of the field name match a pruned type use it.
+            // (e.g. "url" in "myUrl" or "ext" in "myText")
+            // Otherwise return the first (least disliked) of the pruned types
+            // If there are no pruned types return the full list of types for the object property
+            val fieldName = owlProperty.id.substringAfterLast("/") // owlProperty.fieldNameForOwlProperty()
+            prunedFieldTypes
+                .filter { it.id.endsWith(fieldName.takeLast(typeFuzzyMatchLast), true) }
+                .ifEmpty { prunedFieldTypes.filter { it.id == prunedPropertyTypes.firstOrNull() } }
+                .ifEmpty { fieldTypes }
         }
-
-        val prunedFieldTypes = fieldTypes.filter { it.id in prunedPropertyTypes }
-
-        // If the last three characters of the field name match a pruned type use it.
-        // (e.g. "url" in "myUrl" or "ext" in "myText")
-        // Otherwise return the first (least disliked) of the pruned types
-        // If there are no pruned types return the full list of types for the object property
-        val fieldName = owlProperty.id.substringAfterLast("/") // owlProperty.fieldNameForOwlProperty()
-        return prunedFieldTypes
-            .filter { it.id.endsWith(fieldName.takeLast(typeFuzzyMatchLast), true) }
-            .ifEmpty { prunedFieldTypes.filter { it.id == prunedPropertyTypes.firstOrNull() } }
-            .ifEmpty { fieldTypes }
     }
 }
