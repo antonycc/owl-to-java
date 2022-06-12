@@ -9,7 +9,6 @@ import java.math.BigInteger
 import java.net.URL
 import java.nio.file.Paths
 import java.time.ZonedDateTime
-import java.util.regex.Pattern
 import kotlin.test.*
 
 /**
@@ -322,6 +321,8 @@ internal class GradleTaskTest {
      * variable availabilityStartsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Offer
      * public ZonedDateTime availabilityStartsZonedDateTime;
      *                      ^
+     * // TODO: Add commit hash when passing
+     * @since("Commit hash: ")
      */
     @Test
     fun testNoDuplicateFieldNames() {
@@ -349,7 +350,8 @@ internal class GradleTaskTest {
         val javaSourceFile = bufferedReader.use { it.readText() }
         assertTrue { javaSourceFile.contains("public class ${expectedClass}") }
         assertTrue { javaSourceFile.contains(expectedSingleField) }
-        // TODO: Bug - assertTrue { countMatches(javaSourceFile,Pattern.compile(expectedSingleField)) == 1 }
+        val matches = countMatches(javaSourceFile,expectedSingleField)
+        assertTrue { matches == 1 }
     }
 
     /**
@@ -399,6 +401,7 @@ internal class GradleTaskTest {
         val sampleString = "AABBCCBB"
         val expectedNoMatch = "XX"
         val expectedOneMatch = "AA"
+        val expectedOneMatch2 = "CC"
         val expectedTwoMatch = "BB"
 
         // Setup
@@ -406,25 +409,17 @@ internal class GradleTaskTest {
         // Execution
 
         // Validation
-        assertEquals(0, countMatches(sampleString, Pattern.compile(expectedNoMatch)))
-        assertEquals(1, countMatches(sampleString, Pattern.compile(expectedOneMatch)))
-        assertEquals(0, countMatches(expectedNoMatch, Pattern.compile(expectedOneMatch)))
-        assertEquals(2, countMatches(sampleString, Pattern.compile(expectedTwoMatch)))
-
-        //val s: String? = null
-        //assertFalse("The null operator should evaluate to null, so the Elvis operator finds the false")
-        //{ s?.contains("abc") ?: false }
-        //assertFalse("The null operator should evaluate to null, so the Elvis operator finds \"xyz\"")
-        //{ "abc".contains(s?.toString() ?: "xyz") }
-        //fun String.id() = toString()
-        //assertFalse("The null operator should evaluate to null, so the Elvis operator finds \"xyz\"")
-        //{ "abc".contains(s?.id() ?: "xyz") }
+        assertEquals(0, countMatches(sampleString, expectedNoMatch))
+        assertEquals(1, countMatches(sampleString, expectedOneMatch))
+        assertEquals(1, countMatches(sampleString, expectedOneMatch2))
+        assertEquals(0, countMatches(expectedNoMatch, expectedOneMatch))
+        assertEquals(2, countMatches(sampleString, expectedTwoMatch))
     }
 
-    private fun countMatches(s: String, pattern: Pattern) //: Int {
-        //s.split(pattern).dropLastWhile { it.isEmpty() }.toTypedArray().size - 1
-        //var matches
-        = s.split(pattern).filter { it.isNotBlank() && it != s }.size
-        //return matches.size
-    //}
+    private fun countMatches(s: String, sub: String): Int = with(s.indexOf(sub)){
+        if ( this == -1 )
+            0
+        else
+            1 + countMatches(s.substring(this + sub.length), sub)
+    }
 }

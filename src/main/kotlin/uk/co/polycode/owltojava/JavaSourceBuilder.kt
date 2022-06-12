@@ -69,6 +69,7 @@ open class JavaSourceBuilder(
                 // public class ClassWithMultipleSuperclasses extends SelectedSuperclass {
                 //    AlternateSuperclass  alternateSuperclass;
                 //    AnotherSuperclass    anotherSuperclass;
+                // TODO: Migrate to the same build-flatten pattern as buildJavaFields
                 filteredJavaSuperclasses
                     .filter { it.resource != superclass.resource }
                     .forEach {
@@ -81,21 +82,24 @@ open class JavaSourceBuilder(
             FieldSpec
                 .builder(String::class.java, "isDefinedBy")
                 .addModifiers(Modifier.PUBLIC)
+                    // TODO: Language resource
                 .addJavadoc("Where to find the definition of the OWL Class used to generate this Java class.")
                 .initializer("\"${owlClass.isDefinedBy.resource}\"")
                 .build()
         )
 
         owlProperties
-            .forEach() {
-                addJavaFields(it,
-                    javaClass,
+            .map {
+                buildJavaFields(it,
                     lang,
                     javaBasePackage,
                     primitivePropertyTypes,
                     desiredClasses,
                     prunedPropertyTypes)
             }
+            .flatten()
+            .distinctBy { it.name }
+            .forEach { javaClass.addField(it) }
 
         return JavaFile.builder(javaPackage, javaClass.build())
             .build()
@@ -154,20 +158,22 @@ open class JavaSourceBuilder(
             }
         }
 
-        fun addJavaFields(
+        // TODO: Compress into a more functional style
+        fun buildJavaFields(
             owlField: OwlProperty,
-            javaClass: TypeSpec.Builder,
+            //javaClass: TypeSpec.Builder,
             lang: String,
             javaBasePackage: String,
             primitivePropertyTypes: Map<String, String>,
             desiredClasses: List<String>,
             prunedPropertyTypes: List<String>
-        ) {
+        ): List<FieldSpec> {
+            val javaFields = mutableListOf<FieldSpec>()
             val primaryFieldType: OwlClassRef? = selectType(owlField.fieldTypes, desiredClasses, prunedPropertyTypes)
             val fieldName = fieldNameForOwlPropertyId(owlField.id)
             val fieldComments = owlField.commentsForOwlProperty(lang)
             val fieldTypeName = fieldTypeForOwlProperty(javaBasePackage, primaryFieldType, primitivePropertyTypes)
-            addJavaField(javaClass, fieldTypeName, fieldName, fieldComments)
+            javaFields.add(buildJavaField(fieldTypeName, fieldName, fieldComments))
             // Multiple type fields are split into separate fields
             // e.g.
             // public class CreativeWork extends Thing {
@@ -178,8 +184,9 @@ open class JavaSourceBuilder(
                 .forEach {
                     val additionalFieldTypeName = fieldTypeForOwlProperty(javaBasePackage, it, primitivePropertyTypes)
                     val additionalFieldName = fieldName + additionalFieldTypeName.toString().split(".").last()
-                    addJavaField(javaClass, additionalFieldTypeName, additionalFieldName, fieldComments)
+                    javaFields.add(buildJavaField(additionalFieldTypeName, additionalFieldName, fieldComments))
                 }
+            return javaFields
         }
 
         private fun fieldNameForOwlPropertyId(id: String): String {
@@ -190,20 +197,15 @@ open class JavaSourceBuilder(
                 "${fieldName}Field"
         }
 
-        private fun addJavaField(
-            javaClass: TypeSpec.Builder,
+        private fun buildJavaField(
             fieldTypeName: ClassName,
             safeFieldName: String,
             fieldComments: String
-        ) {
-            javaClass.addField(
-                FieldSpec
-                    .builder(fieldTypeName, safeFieldName)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addJavadoc(fieldComments)
-                    .build()
-            )
-        }
+        ) = FieldSpec
+            .builder(fieldTypeName, safeFieldName)
+            .addModifiers(Modifier.PUBLIC)
+            .addJavadoc(fieldComments)
+            .build()
 
         private fun fieldTypeForOwlProperty(
                 javaBasePackage: String,
