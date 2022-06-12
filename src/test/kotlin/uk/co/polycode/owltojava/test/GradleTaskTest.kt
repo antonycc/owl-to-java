@@ -321,8 +321,7 @@ internal class GradleTaskTest {
      * variable availabilityStartsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Offer
      * public ZonedDateTime availabilityStartsZonedDateTime;
      *                      ^
-     * // TODO: Add commit hash when passing
-     * @since("Commit hash: ")
+     * @since("Commit hash: 6c00cc11c84725ca4472979a48988a031c166fdd")
      */
     @Test
     fun testNoDuplicateFieldNames() {
@@ -367,6 +366,8 @@ internal class GradleTaskTest {
      * public class XPathType extends Text {
      *                                ^
      * symbol: class Text
+     *
+     * @since("Commit hash: ")
      */
     @Test
     fun testNoTextSuperclass() {
@@ -375,13 +376,14 @@ internal class GradleTaskTest {
         val expectedClass = "XPathType"
         val outputFilePath = "${javaSourceDirectoryPath}/uk/co/polycode/org/schema/${expectedClass}.java"
         val outputFile = Paths.get(outputFilePath).toFile()
-        //val unexpectedSingleField = "extends Text"
+        val unexpectedSingleField = "extends Text"
 
         // Setup
         val taskDelegate = RegenerateOntologyTaskDelegate(
             src = wholeOwlFilePath.toFile().absolutePath,
             dest = javaSourceDirectoryPath.toFile().absolutePath,
             javaBasePackage = javaBasePackage)
+            .also { it.primitivePropertyTypes = this.primitivePropertyTypes }
 
         // Execution
         taskDelegate.regenerateJavaSource()
@@ -391,7 +393,7 @@ internal class GradleTaskTest {
         val bufferedReader: BufferedReader = outputFile.bufferedReader()
         val javaSourceFile = bufferedReader.use { it.readText() }
         assertTrue { javaSourceFile.contains("public class ${expectedClass}") }
-        //TODO: Bug - assertFalse { javaSourceFile.contains(unexpectedSingleField) }
+        assertFalse { javaSourceFile.contains(unexpectedSingleField) }
     }
 
     @Test

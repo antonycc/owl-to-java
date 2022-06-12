@@ -59,22 +59,33 @@ open class JavaSourceBuilder(
                 .filter { it.resource !in ignoredSuperclasses }
             val superclass = selectSuperclass(desiredClasses, filteredJavaSuperclasses)
             if (superclass != null) {
-                // Pick one superclass to be the Java superclass
-                val javaSuperclassName = classNameForUri(URI(superclass.resource))
-                val javaSuperclass = ClassName.get(javaPackage, javaSuperclassName)
-                javaClass.superclass(javaSuperclass)
+                if(superclass.resource !in primitivePropertyTypes){
+                    // Pick one superclass to be the Java superclass
+                    val javaSuperclassName = classNameForUri(URI(superclass.resource))
+                    val javaSuperclass = ClassName.get(javaPackage, javaSuperclassName)
+                    javaClass.superclass(javaSuperclass)
+                }else{
+                    // Instead of a superclass, add a field called value matching the superclass primitive
+                    javaClass.addField(
+                        FieldSpec
+                            .builder(ClassName.bestGuess(primitivePropertyTypes[superclass.resource]), "value")
+                            .addModifiers(Modifier.PUBLIC)
+                            // TODO: Language resource
+                            .addJavadoc("The value of what would have been a primitive supertype.")
+                            .build()
+                    )
+                }
 
                 // Multiple superclasses are split into separate fields
                 // e.g.
                 // public class ClassWithMultipleSuperclasses extends SelectedSuperclass {
                 //    AlternateSuperclass  alternateSuperclass;
                 //    AnotherSuperclass    anotherSuperclass;
-                // TODO: Migrate to the same build-flatten pattern as buildJavaFields
                 filteredJavaSuperclasses
                     .filter { it.resource != superclass.resource }
-                    .forEach {
-                        addJavaFieldsForAdditionalSuperclasses(it, javaClass, javaBasePackage, primitivePropertyTypes)
-                    }
+                    .map { buildJavaFieldsForAdditionalSuperclasses(it, javaBasePackage, primitivePropertyTypes) }
+                    .flatten()
+                    .forEach { javaClass.addField(it) }
             }
         }
 
@@ -133,12 +144,13 @@ open class JavaSourceBuilder(
             "var",
             "val")
 
-        fun addJavaFieldsForAdditionalSuperclasses(
+        // TODO: Why is this just one added superclass as a field?
+        fun buildJavaFieldsForAdditionalSuperclasses(
             owlSuperclass: RdfsResource,
-            javaClass: TypeSpec.Builder,
             javaBasePackage: String,
             primitivePropertyTypes: Map<String, String>
-        ) {
+        ): List<FieldSpec> {
+            val javaSuperclassFields = mutableListOf<FieldSpec>()
             val superclassOwlClass = OwlClassRef()
             superclassOwlClass.id = owlSuperclass.resource
             val additionalFieldTypeName = fieldTypeForOwlProperty(
@@ -151,11 +163,12 @@ open class JavaSourceBuilder(
                     additionalFieldName[0],
                     additionalFieldName[0].lowercaseChar()
                 )
-                javaClass.addField(FieldSpec
+                javaSuperclassFields.add(FieldSpec
                     .builder(additionalFieldTypeName, capitalisedFieldName)
                     .addModifiers(Modifier.PUBLIC)
                     .build())
             }
+            return javaSuperclassFields
         }
 
         // TODO: Compress into a more functional style

@@ -18,35 +18,6 @@ OWL to Java currently:
 
 # Bugs
 
-* Generated source doesn't compile
-```text
-Compiling with JDK Java compiler API.
-/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/Offer.java:347: error: variable availabilityEndsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Offer
-  public ZonedDateTime availabilityEndsZonedDateTime;
-                       ^
-/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/Offer.java:362: error: variable availabilityStartsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Offer
-  public ZonedDateTime availabilityStartsZonedDateTime;
-                       ^
-/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/Demand.java:250: error: variable availabilityEndsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Demand
-  public ZonedDateTime availabilityEndsZonedDateTime;
-                       ^
-/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/Demand.java:265: error: variable availabilityStartsZonedDateTime is already defined in class uk.co.polycode.schemaorg.org.schema.Demand
-  public ZonedDateTime availabilityStartsZonedDateTime;
-                       ^
-/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/CssSelectorType.java:17: error: cannot find symbol
-public class CssSelectorType extends Text {
-                                     ^
-  symbol: class Text
-/Users/antony/projects/libschemaorg/src/main/java/uk/co/polycode/schemaorg/org/schema/XPathType.java:17: error: cannot find symbol
-public class XPathType extends Text {
-                               ^
-  symbol: class Text
-6 errors
-```
-* Perhaps if something extends Text and has no additional attributes, then it should be Text, 
-* otherwise it has a field:   var text: String
-* Count Matches expected: <2> but was: <1>
-
 * Dependency org.simpleframework:simple-xml:2.7.1 is vulnerable
 ```text
 CVE-2017-1000190 9.1 Improper Restriction of XML External Entity Reference vulnerability pending CVSS allocation
