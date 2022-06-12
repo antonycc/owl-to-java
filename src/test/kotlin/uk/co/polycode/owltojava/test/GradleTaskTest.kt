@@ -367,7 +367,7 @@ internal class GradleTaskTest {
      *                                ^
      * symbol: class Text
      *
-     * @since("Commit hash: ")
+     * @since("Commit hash: 1f2204db95a8c3efbf2f7d62756c4b94dd0b22ee")
      */
     @Test
     fun testNoTextSuperclass() {
