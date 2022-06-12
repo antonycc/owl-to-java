@@ -349,7 +349,7 @@ internal class GradleTaskTest {
         val javaSourceFile = bufferedReader.use { it.readText() }
         assertTrue { javaSourceFile.contains("public class ${expectedClass}") }
         assertTrue { javaSourceFile.contains(expectedSingleField) }
-        //TODO: Bug - assertTrue { countMatches(javaSourceFile,Pattern.compile(expectedSingleField)) == 1 }
+        // TODO: Bug - assertTrue { countMatches(javaSourceFile,Pattern.compile(expectedSingleField)) == 1 }
     }
 
     /**
@@ -399,7 +399,7 @@ internal class GradleTaskTest {
         val sampleString = "AABBCCBB"
         val expectedNoMatch = "XX"
         val expectedOneMatch = "AA"
-        //val expectedTwoMatch = "BB"
+        val expectedTwoMatch = "BB"
 
         // Setup
 
@@ -409,8 +409,7 @@ internal class GradleTaskTest {
         assertEquals(0, countMatches(sampleString, Pattern.compile(expectedNoMatch)))
         assertEquals(1, countMatches(sampleString, Pattern.compile(expectedOneMatch)))
         assertEquals(0, countMatches(expectedNoMatch, Pattern.compile(expectedOneMatch)))
-        // TODO: Bug - count matches doesn't work
-        //  assertEquals(2, countMatches(sampleString, Pattern.compile(expectedTwoMatch)))
+        assertEquals(2, countMatches(sampleString, Pattern.compile(expectedTwoMatch)))
 
         //val s: String? = null
         //assertFalse("The null operator should evaluate to null, so the Elvis operator finds the false")
@@ -422,6 +421,10 @@ internal class GradleTaskTest {
         //{ "abc".contains(s?.id() ?: "xyz") }
     }
 
-    private fun countMatches(s: String, pattern: Pattern) =
-        s.split(pattern).dropLastWhile { it.isEmpty() }.toTypedArray().size - 1
+    private fun countMatches(s: String, pattern: Pattern) //: Int {
+        //s.split(pattern).dropLastWhile { it.isEmpty() }.toTypedArray().size - 1
+        //var matches
+        = s.split(pattern).filter { it.isNotBlank() && it != s }.size
+        //return matches.size
+    //}
 }
