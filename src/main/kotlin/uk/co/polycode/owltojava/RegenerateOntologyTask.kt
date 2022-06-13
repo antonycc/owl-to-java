@@ -22,11 +22,11 @@ import java.io.File
  */
 abstract class RegenerateOntologyTask : DefaultTask() {
 
-    // TODO: use InputFile
+    // TODO: Consider using InputFile
     @get:Input
     abstract var src: String
 
-    // TODO: use InputDir (?)
+    // TODO: Consider using InputDir
     @get:Input
     abstract var dest: String
 
@@ -34,25 +34,32 @@ abstract class RegenerateOntologyTask : DefaultTask() {
     abstract var javaBasePackage: String
 
     @get:Input
-    abstract var lang: String?
+    @Optional
+    var lang: String? = null
 
     @get:Input
-    abstract var licenceText: String?
+    @Optional
+    var licenceText: String? = null
 
     @get:Input
-    abstract var classes: List<String>?
+    @Optional
+    var classes: List<String>? = null
 
     @get:Input
-    abstract var primitivePropertyTypes: Map<String, String>?
+    @Optional
+    var primitivePropertyTypes: Map<String, String>? = null
 
     @get:Input
-    abstract var ignoredPropertyTypes: List<String>?
+    @Optional
+    var ignoredPropertyTypes: List<String>? = null
 
     @get:Input
-    abstract var prunedPropertyTypes: List<String>?
+    @Optional
+    var prunedPropertyTypes: List<String>? = null
 
     @get:Input
-    abstract var ignoredSuperclasses: List<String>?
+    @Optional
+    var ignoredSuperclasses: List<String>? = null
 
     @get:OutputDirectory
     @Optional
