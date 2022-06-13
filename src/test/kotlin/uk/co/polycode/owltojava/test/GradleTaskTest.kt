@@ -266,11 +266,10 @@ internal class GradleTaskTest {
         assertTrue { javaSourceFile.contains("public Boolean publicAccess;") }
     }
 
-    // TODO: Add commit hash for Gradle Task with default arguments, once the actual task accepts defaults
     /**
      * Gradle Task with default arguments
      *
-     * @since("Commit hash: ")
+     * @since("Commit hash: 2ce90b1eff2e7746ebf96f0dbfd82e668510b505")
      */
     @Test
     fun testJavaSourceFileInOutputWitDefaults() {
