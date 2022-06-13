@@ -172,7 +172,6 @@ tasks {
         val sourceFileName = "schemaorg.owl"
         lang = "en"
         src = Paths.get("${srcMain}/resources/${sourceFileName}").toFile().absolutePath
-        dest = Paths.get("${buildDir}/generated-src-with-defaults").toFile().absolutePath
         dest = Paths.get("${srcMain}/java").toFile().absolutePath
         javaBasePackage = "uk.co.polycode.ontology.with-defaults"
     }
