@@ -22,13 +22,13 @@ OWL to Java currently:
 
 # TODO
 
-* Versioning policy, auto-increment and release.
-* License dependency extraction
 * Customise POM with licence: https://docs.gradle.org/current/userguide/publishing_maven.html
 * Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
 See: https://stackoverflow.com/questions/24827733/how-do-you-set-the-maven-artifact-id-of-a-gradle-project
 * Build with Java 18
-* **Publish: Release 1.0.0 to GitHub packages**
+* Groovy Gradle examples
+* Kotlin standalone example
+* **Publish: Release 0.1.0 to GitHub packages**
 * Graph DB annotations + graph example
 * Lombok annotations
 * Graphical viewer + example
@@ -258,6 +258,18 @@ commits and committers remains we have two **paths to contribute to this project
 * Contact me via my GitHub profile (->website -> LinkedIn) and ask to be added to this project.
 * Fork the repository then create a pull request.
 
+Versioning is assisted by the Semantic Version Gradle Plugin, 
+see: https://github.com/dipien/semantic-version-gradle-plugin
+```shell
+ % ./gradlew printVersion                                 
+Version: 0.0.1-SNAPSHOT
+ % ./gradlew incrementVersion --versionIncrementType=PATCH
+ ...
+ % ./gradlew printVersion                                 
+Version: 0.0.2-SNAPSHOT
+ % 
+```
+
 ## Request a feature
 
 To request a new feature:
@@ -288,7 +300,21 @@ e.g.
 
 
 
-# Licence
+# Licences
+
+To generate a dependency license report, use Gradle License Report plugin.
+See https://github.com/jk1/Gradle-License-Report
+```
+ % gradle generateLicenseReport
+BUILD SUCCESSFUL in 3s
+ % head -5 build/reports/dependency-license/index.html
+
+<html>
+<head>
+    <title>
+        Dependency License Report for owl-to-java
+ % 
+```
 
 ## Licence - OWL to Java
 

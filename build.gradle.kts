@@ -29,14 +29,25 @@ if ( "safeBuildMode" in project.properties && "false" == project.properties["saf
 logger.info("Gradle logging is outputting at INFO.")
 logger.debug("Gradle logging is outputting at DEBUG.")
 
+buildscript {
+    repositories {
+        mavenCentral() // or gradlePluginPortal()
+    }
+    dependencies {
+        classpath("com.dipien:semantic-version-gradle-plugin:1.0.0")
+    }
+}
+apply(plugin = "com.dipien.semantic-version")
+
 plugins {
     `kotlin-dsl`
-    `application`
+    application
     `maven-publish`
     id("io.gitlab.arturbosch.detekt").version("1.20.0")
-    id("org.jetbrains.kotlinx.kover").version("0.5.1")
+    id("org.jetbrains.kotlinx.kover") .version("0.5.1")
     //kotlin("jvm").version("1.6.21")
-    id("org.jetbrains.kotlin.jvm") version "1.7.0-RC2" // "1.5.31" // "1.6.21"
+    id("org.jetbrains.kotlin.jvm").version("1.7.0-RC2") // "1.5.31" // "1.6.21"
+    id("com.github.jk1.dependency-license-report").version("2.0")
 }
 
 // From: https://stackoverflow.com/questions/56921833/kotlin-program-error-no-main-manifest-attribute-in-jar-file/61373175#61373175
@@ -55,7 +66,7 @@ afterEvaluate {
 }
 
 group = "co.uk.polycode"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.2-SNAPSHOT"
 
 publishing {
     publications {
