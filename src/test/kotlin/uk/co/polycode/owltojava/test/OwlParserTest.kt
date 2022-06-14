@@ -23,8 +23,10 @@ import java.nio.file.Paths
 internal class OwlParserTest {
 
     private val srcTestResources = "./src/test/resources"
-    private val minimalOwlFilePath = Paths.get("${srcTestResources}/schemaorg-minimal-person.owl")
     private val skeletonOwlFilePath = Paths.get("${srcTestResources}/schemaorg-skeleton.owl")
+    private val rdfDocument: RdfDocument = with(skeletonOwlFilePath.toFile()){
+        Persister().read(RdfDocument::class.java, this, false)
+    }
     private val lang = "en"
     private val classes = listOf(
         "https://schema.org/Person",
@@ -65,9 +67,6 @@ internal class OwlParserTest {
         val expectedNumberOfClasses = 1
 
         // Setup
-        val rdfDocument: RdfDocument = with(skeletonOwlFilePath.toFile()){
-            Persister().read(RdfDocument::class.java, this, false)
-        }
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument).also {
@@ -95,9 +94,6 @@ internal class OwlParserTest {
         val expectedNumberOfClasses = 1
 
         // Setup
-        val rdfDocument: RdfDocument = with(skeletonOwlFilePath.toFile()){
-            Persister().read(RdfDocument::class.java, this, false)
-        }
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument)
@@ -117,9 +113,6 @@ internal class OwlParserTest {
         val expectedNumberOfClasses = 1
 
         // Setup
-        val rdfDocument: RdfDocument = with(minimalOwlFilePath.toFile()){
-            Persister().read(RdfDocument::class.java, this, false)
-        }
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument).also {
@@ -144,9 +137,6 @@ internal class OwlParserTest {
         val expectedNumberOfClasses = 1
 
         // Setup
-        val rdfDocument: RdfDocument = with(minimalOwlFilePath.toFile()){
-            Persister().read(RdfDocument::class.java, this, false)
-        }
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument)

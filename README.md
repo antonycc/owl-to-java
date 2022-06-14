@@ -18,16 +18,10 @@ OWL to Java currently:
 
 # Bugs
 
-* Dependency org.simpleframework:simple-xml:2.7.1 is vulnerable
-```text
-CVE-2017-1000190 9.1 Improper Restriction of XML External Entity Reference vulnerability pending CVSS allocation
-Results powered by Checkmarx(c)
-```
-* :jar: No valid plugin descriptors were found in META-INF/gradle-plugins
+* None listed
 
 # TODO
 
-* Change the tests so that the owl files are loaded once per test class and with only one test class using the full file
 * Versioning policy, auto-increment and release.
 * License dependency extraction
 * Customise POM with licence: https://docs.gradle.org/current/userguide/publishing_maven.html
@@ -69,6 +63,14 @@ See: https://stackoverflow.com/questions/24827733/how-do-you-set-the-maven-artif
 * Extend one schema with another
 * @since versioned annotation on tests and auto-generated version history from test annotations
 
+# Annoyances
+
+* Dependency org.simpleframework:simple-xml:2.7.1 is vulnerable
+```text
+CVE-2017-1000190 9.1 Improper Restriction of XML External Entity Reference vulnerability pending CVSS allocation
+Results powered by Checkmarx(c)
+```
+* :jar: No valid plugin descriptors were found in META-INF/gradle-plugins
 
 
 Example of Kotlin script evaluation

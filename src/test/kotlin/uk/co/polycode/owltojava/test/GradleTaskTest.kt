@@ -27,8 +27,10 @@ import kotlin.test.*
 internal class GradleTaskTest {
 
     private val srcTestResources = "./src/test/resources"
-    private val minimalOwlFilePath = Paths.get("${srcTestResources}/schemaorg-minimal-person.owl")
     private val wholeOwlFilePath = Paths.get("${srcTestResources}/schemaorg.owl")
+    private val rdfDocument: RdfDocument = with(wholeOwlFilePath.toFile()){
+        Persister().read(RdfDocument::class.java, this, false)
+    }
     private val javaSourceDirectoryPath = Paths.get("./build/generated-sources")
     private val javaBasePackage = "uk.co.polycode"
     private val licenceText = """
@@ -71,6 +73,31 @@ internal class GradleTaskTest {
     private val ignoredSuperclasses = listOf(
         "http://www.w3.org/2000/01/rdf-schema#Class"
     )
+    private val owlParser = OwlParser(rdfDocument = rdfDocument)
+    private val javaSourceBuilder = JavaSourceBuilder(javaBasePackage = javaBasePackage).also {
+        it.primitivePropertyTypes = this.primitivePropertyTypes
+    }
+    private val taskDelegate = RegenerateOntologyTaskDelegate(
+        src = wholeOwlFilePath.toFile().absolutePath,
+        dest = "",
+        javaBasePackage = javaBasePackage)
+        .also {
+            it.lang = this.lang
+            it.licenceText = this.licenceText
+            it.classes = this.classes
+            it.primitivePropertyTypes = this.primitivePropertyTypes
+            it.ignoredPropertyTypes = this.ignoredPropertyTypes
+            it.prunedPropertyTypes = this.prunedPropertyTypes
+            it.ignoredSuperclasses = this.ignoredSuperclasses
+            it.regenerateJavaSource()
+        }
+    private val taskDelegateWithDefaults = RegenerateOntologyTaskDelegate(
+        src = wholeOwlFilePath.toFile().absolutePath,
+        dest = javaSourceDirectoryPath.toFile().absolutePath,
+        javaBasePackage = javaBasePackage).also {
+        it.primitivePropertyTypes = this.primitivePropertyTypes
+        it.regenerateJavaSource()
+    }
 
     @Test
     fun testJavaSourceFileInOutput() {
@@ -82,10 +109,7 @@ internal class GradleTaskTest {
         val expectedOutputFile = Paths.get(expectedOutputFilePath).toFile()
 
         // Setup
-        val rdfDocument: RdfDocument = with(wholeOwlFilePath.toFile()){
-            Persister().read(RdfDocument::class.java, this, false)
-        }
-        val ontologyClasses = OwlParser(rdfDocument = rdfDocument).also {
+        val ontologyClasses = owlParser.also {
             it.classes = this.classes
             it.ignoredPropertyTypes = this.ignoredPropertyTypes
             it.prunedPropertyTypes = this.prunedPropertyTypes
@@ -144,15 +168,9 @@ internal class GradleTaskTest {
         val expectedOutputFile = Paths.get(expectedOutputFilePath).toFile()
 
         // Setup
-        val rdfDocument: RdfDocument = with(wholeOwlFilePath.toFile()){
-            Persister().read(RdfDocument::class.java, this, false)
-        }
-        val ontologyClasses = OwlParser(rdfDocument = rdfDocument)
+        val ontologyClasses = owlParser
             .buildClassMap()
             .filter { it.key.id !in primitivePropertyTypes.keys }
-        val javaSourceBuilder = JavaSourceBuilder(javaBasePackage = javaBasePackage).also {
-            it.primitivePropertyTypes = this.primitivePropertyTypes
-        }
 
         // Execution
         // TODO: Move to companion object for static invocation
@@ -196,24 +214,11 @@ internal class GradleTaskTest {
         val expectedOutputFile = Paths.get(expectedOutputFilePath).toFile()
 
         // Setup
-        val taskDelegate = RegenerateOntologyTaskDelegate(
-            src = minimalOwlFilePath.toFile().absolutePath,
-            dest = "",
-            javaBasePackage = javaBasePackage)
-            .also {
-                it.lang = this.lang
-                it.licenceText = this.licenceText
-                it.classes = this.classes
-                it.primitivePropertyTypes = this.primitivePropertyTypes
-                it.ignoredPropertyTypes = this.ignoredPropertyTypes
-                it.prunedPropertyTypes = this.prunedPropertyTypes
-                it.ignoredSuperclasses = this.ignoredSuperclasses
-            }
 
         // Execution
-        taskDelegate.regenerateJavaSource()
 
         // Primitive validation
+        assertNotNull(taskDelegate)
         assertTrue(!expectedOutputFile.exists())
     }
 
@@ -230,22 +235,8 @@ internal class GradleTaskTest {
         val outputFile = Paths.get(outputFilePath).toFile()
 
         // Setup
-        val taskDelegate = RegenerateOntologyTaskDelegate(
-            src = wholeOwlFilePath.toFile().absolutePath,
-            dest = javaSourceDirectoryPath.toFile().absolutePath,
-            javaBasePackage = javaBasePackage)
-            .also {
-                it.lang = this.lang
-                it.licenceText = this.licenceText
-                it.classes = this.classes
-                it.primitivePropertyTypes = this.primitivePropertyTypes
-                it.ignoredPropertyTypes = this.ignoredPropertyTypes
-                it.prunedPropertyTypes = this.prunedPropertyTypes
-                it.ignoredSuperclasses = this.ignoredSuperclasses
-            }
 
         // Execution
-        taskDelegate.regenerateJavaSource()
 
         // Validation
         assertNotNull(RegenerateOntologyTask::class.java)
@@ -255,9 +246,9 @@ internal class GradleTaskTest {
         val javaSourceFile = bufferedReader.use { it.readText() }
         assertTrue { javaSourceFile.contains("public class ${expectedClass}") }
         assertTrue { javaSourceFile.contains("public GeoShape geoGeoShape;") }
-        assertTrue { javaSourceFile.contains("public PostalAddress address;") }
+        assertTrue { javaSourceFile.contains("public PostalAddress addressPostalAddress;") }
         assertTrue { javaSourceFile.contains("public DefinedTerm keywords;") }
-        assertTrue { javaSourceFile.contains("public BigDecimal latitude;") }
+        assertTrue { javaSourceFile.contains("public BigDecimal latitudeBigDecimal;") }
         assertTrue { javaSourceFile.contains("public BigDecimal longitude;") }
         assertTrue { javaSourceFile.contains("public OpeningHoursSpecification openingHoursSpecification;") }
         assertTrue { javaSourceFile.contains("public Photograph photo;") }
@@ -272,7 +263,7 @@ internal class GradleTaskTest {
      * @since("Commit hash: 2ce90b1eff2e7746ebf96f0dbfd82e668510b505")
      */
     @Test
-    fun testJavaSourceFileInOutputWitDefaults() {
+    fun testJavaSourceFileInOutputWithDefaults() {
 
         // Expected results
         val expectedClass = "Place"
@@ -280,17 +271,11 @@ internal class GradleTaskTest {
         val outputFile = Paths.get(outputFilePath).toFile()
 
         // Setup
-        val taskDelegate = RegenerateOntologyTaskDelegate(
-            src = wholeOwlFilePath.toFile().absolutePath,
-            dest = javaSourceDirectoryPath.toFile().absolutePath,
-            javaBasePackage = javaBasePackage).also {
-            it.primitivePropertyTypes = this.primitivePropertyTypes
-        }
 
         // Execution
-        taskDelegate.regenerateJavaSource()
 
         // Validation
+        assertNotNull(taskDelegateWithDefaults)
         assertTrue(outputFile.exists())
         val bufferedReader: BufferedReader = outputFile.bufferedReader()
         val javaSourceFile = bufferedReader.use { it.readText() }
@@ -332,15 +317,8 @@ internal class GradleTaskTest {
         val expectedSingleField = "availabilityEndsZonedDateTime"
 
         // Setup
-        val taskDelegate = RegenerateOntologyTaskDelegate(
-            src = wholeOwlFilePath.toFile().absolutePath,
-            dest = javaSourceDirectoryPath.toFile().absolutePath,
-            javaBasePackage = javaBasePackage).also {
-            it.primitivePropertyTypes = this.primitivePropertyTypes
-        }
 
         // Execution
-        taskDelegate.regenerateJavaSource()
 
         // Validation
         assertTrue(outputFile.exists())
@@ -378,14 +356,8 @@ internal class GradleTaskTest {
         val unexpectedSingleField = "extends Text"
 
         // Setup
-        val taskDelegate = RegenerateOntologyTaskDelegate(
-            src = wholeOwlFilePath.toFile().absolutePath,
-            dest = javaSourceDirectoryPath.toFile().absolutePath,
-            javaBasePackage = javaBasePackage)
-            .also { it.primitivePropertyTypes = this.primitivePropertyTypes }
 
         // Execution
-        taskDelegate.regenerateJavaSource()
 
         // Validation
         assertTrue(outputFile.exists())

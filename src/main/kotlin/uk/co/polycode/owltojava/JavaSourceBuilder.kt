@@ -53,41 +53,9 @@ open class JavaSourceBuilder(
             logger.warn("Could not add javadoc: ${javadocTextEscaped} due to: ${e.message}")
             logger.debug(e.stackTraceToString())
         }
-        val javaSuperclasses = owlClass.subClassesOf
-        if (!javaSuperclasses.isNullOrEmpty()) {
-            val filteredJavaSuperclasses = javaSuperclasses
-                .filter { it.resource !in ignoredSuperclasses }
-            val superclass = selectSuperclass(desiredClasses, filteredJavaSuperclasses)
-            if (superclass != null) {
-                if(superclass.resource !in primitivePropertyTypes){
-                    // Pick one superclass to be the Java superclass
-                    val javaSuperclassName = classNameForUri(URI(superclass.resource))
-                    val javaSuperclass = ClassName.get(javaPackage, javaSuperclassName)
-                    javaClass.superclass(javaSuperclass)
-                }else{
-                    // Instead of a superclass, add a field called value matching the superclass primitive
-                    javaClass.addField(
-                        FieldSpec
-                            .builder(ClassName.bestGuess(primitivePropertyTypes[superclass.resource]), "value")
-                            .addModifiers(Modifier.PUBLIC)
-                            // TODO: Language resource
-                            .addJavadoc("The value of what would have been a primitive supertype.")
-                            .build()
-                    )
-                }
 
-                // Multiple superclasses are split into separate fields
-                // e.g.
-                // public class ClassWithMultipleSuperclasses extends SelectedSuperclass {
-                //    AlternateSuperclass  alternateSuperclass;
-                //    AnotherSuperclass    anotherSuperclass;
-                filteredJavaSuperclasses
-                    .filter { it.resource != superclass.resource }
-                    .map { buildJavaFieldsForAdditionalSuperclasses(it, javaBasePackage, primitivePropertyTypes) }
-                    .flatten()
-                    .forEach { javaClass.addField(it) }
-            }
-        }
+        // TODO: Add the primary superclass and return the rest as fields, then dedupe with the fields
+        addSuperclasses(owlClass, javaPackage, javaClass)
 
         javaClass.addField(
             FieldSpec
@@ -115,6 +83,48 @@ open class JavaSourceBuilder(
         return JavaFile.builder(javaPackage, javaClass.build())
             .build()
             .toString()
+    }
+
+    private fun addSuperclasses(
+        owlClass: OwlClass,
+        javaPackage: String,
+        javaClass: TypeSpec.Builder
+    ) {
+        val javaSuperclasses = owlClass.subClassesOf
+        if (!javaSuperclasses.isNullOrEmpty()) {
+            val filteredJavaSuperclasses = javaSuperclasses
+                .filter { it.resource !in ignoredSuperclasses }
+            val superclass = selectSuperclass(desiredClasses, filteredJavaSuperclasses)
+            if (superclass != null) {
+                if (superclass.resource !in primitivePropertyTypes) {
+                    // Pick one superclass to be the Java superclass
+                    val javaSuperclassName = classNameForUri(URI(superclass.resource))
+                    val javaSuperclass = ClassName.get(javaPackage, javaSuperclassName)
+                    javaClass.superclass(javaSuperclass)
+                } else {
+                    // Instead of a superclass, add a field called value matching the superclass primitive
+                    javaClass.addField(
+                        FieldSpec
+                            .builder(ClassName.bestGuess(primitivePropertyTypes[superclass.resource]), "value")
+                            .addModifiers(Modifier.PUBLIC)
+                            // TODO: Language resource
+                            .addJavadoc("The value of what would have been a primitive supertype.")
+                            .build()
+                    )
+                }
+
+                // Multiple superclasses are split into separate fields
+                // e.g.
+                // public class ClassWithMultipleSuperclasses extends SelectedSuperclass {
+                //    AlternateSuperclass  alternateSuperclass;
+                //    AnotherSuperclass    anotherSuperclass;
+                filteredJavaSuperclasses
+                    .filter { it.resource != superclass.resource }
+                    .map { buildJavaFieldsForAdditionalSuperclasses(it, javaBasePackage, primitivePropertyTypes) }
+                    .flatten()
+                    .forEach { javaClass.addField(it) }
+            }
+        }
     }
 
     private fun getClassJavaDocEscaped(owlClass: OwlClass): String {
