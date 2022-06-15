@@ -1,0 +1,38 @@
+## This was copied and modified from the Semantic Version Gradle Plugin which is released under the
+## Apache License Version 2.0, January 2004: http://www.apache.org/licenses/
+## Source: https://github.com/dipien/semantic-version-gradle-plugin/blob/master/.github/workflows/increment_version.yml
+name: Increment Version
+on:
+  workflow_dispatch:
+    inputs:
+      versionIncrementType:
+        description: 'The type of increment'
+        type: choice
+        required: true
+        options:
+          - MAJOR
+          - MINOR
+          - PATCH
+      versionIncrementBranch:
+        description: 'The branch where the version increment will be committed and pushed'
+        required: true
+        default: 'master'
+jobs:
+  incrementVersion:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/marketplace/actions/checkout
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # https://github.com/actions/setup-java
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '18'
+          distribution: 'temurin'
+
+      - run: ./gradlew incrementVersion --versionIncrementType=${{ github.event.inputs.versionIncrementType }} --versionIncrementBranch=${{ github.event.inputs.versionIncrementBranch }}
+        env:
+          gitUserEmail: ${{ secrets.GIT_USER_EMAIL }}
+          gitUserName: ${{ secrets.GIT_USER_NAME }}

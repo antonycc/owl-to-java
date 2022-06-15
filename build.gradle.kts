@@ -65,17 +65,53 @@ afterEvaluate {
     }
 }
 
-group = "co.uk.polycode"
-version = "0.0.2-SNAPSHOT"
 
+// ./gradlew printVersion
+// ./gradlew incrementVersion --versionIncrementType=MAJOR
+// ./gradlew incrementVersion --versionIncrementType=MINOR
+// ./gradlew incrementVersion --versionIncrementType=PATCH
+// ./gradlew printVersion -Psnapshot=false
+group = "co.uk.polycode"
+version = "0.0.8-SNAPSHOT"
+
+// See: https://docs.gradle.org/current/userguide/publishing_maven.html
+// ./gradlew build publishToMavenLocal
 publishing {
     publications {
-        create<MavenPublication>("maven") {
-            groupId = "co.uk.polycode"
-            artifactId = "owltojava"
-            version = "0.0.1-SNAPSHOT"
+        //create<MavenPublication>("maven") {
+        create<MavenPublication>("pluginMaven") {
+            //groupId = "co.uk.polycode"
+            //artifactId = "owltojava"
+            //version = "0.0.1-SNAPSHOT"
 
-            from(components["java"])
+            //from(components["java"])
+            pom {
+                name.set("OWL to Java")
+                description.set("Generates a Java class model from an the W3C Web Ontology Language (OWL).")
+                url.set("https://github.com/antonycc/owl-to-java")
+                properties.set(mapOf(
+                    "myProp" to "value",
+                    "prop.with.dots" to "anotherValue"
+                ))
+                licenses {
+                    license {
+                        name.set("Mozilla Public License, v. 2.0")
+                        url.set("https://mozilla.org/MPL/2.0/")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("antonycc")
+                        name.set("Antony Cartwright")
+                        email.set("antonyccartwright@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/antonycc/owl-to-java.git")
+                    developerConnection.set("scm:git:ssh://github.com/antonycc/owl-to-java.git")
+                    url.set("https://github.com/antonycc/owl-to-java")
+                }
+            }
         }
     }
 }

@@ -22,12 +22,12 @@ OWL to Java currently:
 
 # TODO
 
-* Customise POM with licence: https://docs.gradle.org/current/userguide/publishing_maven.html
-* Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
-See: https://stackoverflow.com/questions/24827733/how-do-you-set-the-maven-artifact-id-of-a-gradle-project
-* Build with Java 18
+* Generate a jar for Java 8 from a Java 18 build
 * Groovy Gradle examples
 * Kotlin standalone example
+* Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
+* TODO review
+* Comment audit
 * **Publish: Release 0.1.0 to GitHub packages**
 * Graph DB annotations + graph example
 * Lombok annotations
@@ -61,7 +61,8 @@ See: https://stackoverflow.com/questions/24827733/how-do-you-set-the-maven-artif
 * Load configuration set by name e.g. (com.example.OwlToJavaConfigSetSchemaOrg.setTaskConfig(this))
 * Load configuration from Kotlin Script: https://kotlinexpertise.com/run-kotlin-scripts-from-kotlin-programs/
 * Extend one schema with another
-* @since versioned annotation on tests and auto-generated version history from test annotations
+* @since versioned annotation on tests and auto-generated version history to CHANGELOG.md
+* Review approach to guidance and help used here: https://github.com/researchgate/gradle-release
 
 # Annoyances
 
@@ -92,7 +93,7 @@ val regenerate by registering(RegenerateOntologyTask::class) {
 
 Build with tests which generate Java Sources:
 ```shell
- % gradle clean test                                                       
+ % ./gradlew clean test                                                       
 Starting a Gradle Daemon, 2 incompatible Daemons could not be reused, use --status for details
 
 > Configure project :
@@ -147,7 +148,19 @@ public class Person extends Thing {
 
 # Examples:
 
-Generating Java sources with default settings using a Gradle Task called "regenerate"
+Clone, build and publish to the local Maven repository
+(e.g. To use am unpublished Gradle Task fork in another project.):
+```shell
+ % git clone <owl-to-java>
+ % cd <owl-to-java>
+ % ./gradlew build publishToMavenLocal  
+...BUILD SUCCESSFUL in 2m 35s...
+ % find ~/.m2 -name "owl-to-java*.jar"
+.../.m2/repository/co/uk/polycode/owl-to-java/0.0.5-SNAPSHOT/owl-to-java-0.0.5-SNAPSHOT.jar
+ % 
+```
+
+Generating Java sources with default settings using a Gradle Task called "regenerate":
 ```kotlin
 buildscript {
     repositories {
@@ -180,7 +193,7 @@ tasks {
 }
 ```
 
-Generating Java sources with settings tuned for this POJO library using a Gradle Task called "regenerate"
+Generating Java sources with settings tuned for this POJO library using a Gradle Task called "regenerate":
 ```kotlin
 buildscript {
     repositories {
@@ -305,7 +318,7 @@ e.g.
 To generate a dependency license report, use Gradle License Report plugin.
 See https://github.com/jk1/Gradle-License-Report
 ```
- % gradle generateLicenseReport
+ % ./gradlew generateLicenseReport
 BUILD SUCCESSFUL in 3s
  % head -5 build/reports/dependency-license/index.html
 
@@ -337,7 +350,8 @@ OWL to Java is released under the Mozilla Public License, v. 2.0:
 
 ## Licence - Schema.org
 
-OWL to Java uses the Schema from Schema.org which is released under the Creative Commons Attribution-ShareAlike License (version 3.0): https://creativecommons.org/licenses/by-sa/3.0/
+OWL to Java uses the Schema from Schema.org which is released under the Creative Commons Attribution-ShareAlike License
+(version 3.0): https://creativecommons.org/licenses/by-sa/3.0/
 Schema.org Version 14.0 is currently used and this can be downloaded from https://schema.org/docs/schemaorg.owl
 ( Release archive: https://github.com/schemaorg/schemaorg/tree/main/data/releases/14.0/ )
 The following files are copies of or derivatives of Schema.org schemas:
@@ -347,3 +361,13 @@ The following files are copies of or derivatives of Schema.org schemas:
 ./src/test/resources/schemaorg-skeleton.owl - Schema.org Version 10: Cut down smallest meaningful ontology
 ```
 Fragment of these files are referenced in OWL to Java source code and tests
+
+## Licence - Semantic Version Gradle Plugin
+
+OWL to Java used the Semantic Version Gradle Plugin which is released under the Apache License
+Version 2.0, January 2004: http://www.apache.org/licenses/
+The following files are copies of or derivatives of Semantic Version Gradle Plugin source:
+```shell
+.github/workflows/increment_version.yml
+  - Copy of https://github.com/dipien/semantic-version-gradle-plugin/blob/master/.github/workflows/increment_version.yml
+```
