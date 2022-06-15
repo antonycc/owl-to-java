@@ -22,7 +22,6 @@ OWL to Java currently:
 
 # TODO
 
-* Generate a jar for Java 8 from a Java 18 build
 * Groovy Gradle examples
 * Kotlin standalone example
 * Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
