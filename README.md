@@ -10,8 +10,8 @@ and their properties.
 
 Mission statement:
 ```text
-Be a useful bridge between ontologies defined using open standards and object models of immediate
-practical use in applications 
+Be a useful bridge between ontologies defined using open standards and object models
+which are of immediate practical use in applications.
 ```
 
 # Done
