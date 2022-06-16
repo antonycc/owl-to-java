@@ -22,8 +22,6 @@ OWL to Java currently:
 
 # TODO
 
-* Groovy Gradle examples
-* Kotlin standalone example
 * Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
 * TODO review
 * Comment audit
@@ -159,7 +157,7 @@ Clone, build and publish to the local Maven repository
  % 
 ```
 
-Generating Java sources with default settings using a Gradle Task called "regenerate":
+Generating Java sources with default settings using a Gradle Task called "regenerate" in Gradle's Kotlin DSL:
 ```kotlin
 buildscript {
     repositories {
@@ -190,6 +188,65 @@ tasks {
         javaBasePackage = "uk.co.polycode.ontology.with-defaults"
     }
 }
+```
+
+Generating Java sources with default settings using a Gradle Task called "regenerate" in Gradle's Groovy DSL:
+```groovy
+import java.nio.file.Paths
+
+buildscript {
+    repositories {
+        mavenLocal() // OWL to Java Task would be in local
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'co.uk.polycode:owl-to-java:0.0.1-SNAPSHOT'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+// Override default library Task with:
+//    ./gradlew regenerate -PuseIncludedBuild=regenerate-lib-with-groovy
+tasks.register("regenerate", uk.co.polycode.owltojava.RegenerateOntologyTask) { //regenerateTask ->
+    // Configure regenerateTask
+    regenerate.outputs.upToDateWhen {false}
+    def srcMain = Paths.get(projectDir.absolutePath + "/../src/main").toFile().absolutePath
+    def sourceFileName = "schemaorg.owl"
+    regenerate.lang = "en"
+    regenerate.src = Paths.get(srcMain + "/resources/" + sourceFileName).toFile().absolutePath
+    regenerate.dest = Paths.get(projectDir.absolutePath + "/../build/generated-src-with-groovy").toFile().absolutePath
+    regenerate.javaBasePackage = "uk.co.polycode.ontology.with-groovy"
+}
+```
+
+Generating Java sources with primitive types defined settings using Kotlin:
+```kotlin
+val srcTestResources = "./src/test/resources"
+val wholeOwlFilePath = Paths.get("${srcTestResources}/schemaorg.owl")
+val javaSourceDirectoryPath = Paths.get("./build/generated-sources")
+val javaBasePackage = "uk.co.polycode"
+val primitivePropertyTypes = mapOf(
+    "https://schema.org/DataType" to Object::class.java.name,
+    "https://schema.org/Text"     to String::class.java.name,
+    "https://schema.org/Time"     to ZonedDateTime::class.java.name,
+    "https://schema.org/DateTime" to ZonedDateTime::class.java.name,
+    "https://schema.org/Date"     to ZonedDateTime::class.java.name,
+    "https://schema.org/URL"      to URL::class.java.name,
+    "https://schema.org/Integer"  to BigInteger::class.java.name,
+    "https://schema.org/Float"    to BigDecimal::class.java.name,
+    "https://schema.org/Number"   to BigDecimal::class.java.name,
+    "https://schema.org/Boolean"  to "java.lang.Boolean", // Boolean::class.java.name, unboxes to boolean.
+)
+val taskDelegateWithDefaults = RegenerateOntologyTaskDelegate(
+        src = wholeOwlFilePath.toFile().absolutePath,
+        dest = javaSourceDirectoryPath.toFile().absolutePath,
+        javaBasePackage = javaBasePackage).also {
+        it.primitivePropertyTypes = this.primitivePropertyTypes
+    }
+taskDelegateWithDefaults.regenerateJavaSource()
 ```
 
 Generating Java sources with settings tuned for this POJO library using a Gradle Task called "regenerate":
