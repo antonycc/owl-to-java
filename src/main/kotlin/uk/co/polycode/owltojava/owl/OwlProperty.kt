@@ -81,7 +81,6 @@ abstract class OwlProperty : OwlIdRef() {
         return new
     }
 
-    // TODO: Find a better way to escape "$" on the class JavaDoc than using the string "DOLLAR"
     fun commentsForOwlProperty(lang: String) =
         comments
             .filter { it.lang == lang }
@@ -101,7 +100,8 @@ abstract class OwlProperty : OwlIdRef() {
             .toString()
 
     companion object {
-        fun escapeForJavaDoc(s: String) = s.replace("\$", "DOLLAR")
+        //fun escapeForJavaDoc(s: String) = s.replace("\$", "DOLLAR")
+        fun escapeForJavaDoc(s: String) = s.replace("\$", "USD")
     }
 
 }

@@ -29,7 +29,6 @@ open class JavaSourceWriter {
         javaSourceBuilder: JavaSourceBuilder
     ): File? {
         val latestOutputDir =
-            // TODO: outputDirFilepath isn't actually optional at the Task level, make it optional or remove this
             if (outputDirFilepath.isNotBlank() && outputDirFilepath != "INFO")
                 File(outputDirFilepath)
             else

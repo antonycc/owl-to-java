@@ -133,7 +133,6 @@ open class JavaSourceBuilder(
             .filter { it.lang == lang }
             .map { it.text }
             .fold("${label}\n\n") { javadoc, it -> javadoc.plus(it) }
-        // TODO: Find a better way to escape "$" on the class JavaDoc than using the string "DOLLAR"
         return if (comments.isBlank())
             licenceText
         else
