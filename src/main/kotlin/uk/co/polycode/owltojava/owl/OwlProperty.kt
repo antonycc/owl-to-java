@@ -66,7 +66,7 @@ abstract class OwlProperty : OwlIdRef() {
 
     var fieldTypes = listOf<OwlClassRef>()
 
-    public fun withFieldTypes(fieldTypes: List<OwlClassRef>): OwlProperty{
+    fun withFieldTypes(fieldTypes: List<OwlClassRef>): OwlProperty{
         val new: OwlProperty = this::class.createInstance()
         new.id = super.id
         new.labels = this.labels.map { it }
@@ -82,12 +82,13 @@ abstract class OwlProperty : OwlIdRef() {
     }
 
     // TODO: Find a better way to escape "$" on the class JavaDoc than using the string "DOLLAR"
-    public fun commentsForOwlProperty(lang: String) =
+    fun commentsForOwlProperty(lang: String) =
         comments
             .filter { it.lang == lang }
             .map { it.text }
             .fold("") { javadoc, it -> javadoc.plus(it) }
-            .replace("$", "DOLLAR")
+            .escape()
+    private fun String.escape() = escapeForJavaDoc(this)
 
     override fun toString() =
         MoreObjects.toStringHelper(this.javaClass)
@@ -98,4 +99,9 @@ abstract class OwlProperty : OwlIdRef() {
             .add("domain", domain)
             .add("range", range)
             .toString()
+
+    companion object {
+        fun escapeForJavaDoc(s: String) = s.replace("\$", "DOLLAR")
+    }
+
 }

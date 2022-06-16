@@ -43,11 +43,12 @@ plugins {
     `kotlin-dsl`
     application
     `maven-publish`
-    id("io.gitlab.arturbosch.detekt").version("1.20.0")
-    id("org.jetbrains.kotlinx.kover") .version("0.5.1")
+    id("io.gitlab.arturbosch.detekt") version "1.20.0"
+    id("org.jetbrains.kotlinx.kover") version "0.5.1"
+    id("org.unbroken-dome.test-sets") version "4.0.0"
     //kotlin("jvm").version("1.6.21")
-    id("org.jetbrains.kotlin.jvm").version("1.7.0-RC2") // "1.5.31" // "1.6.21"
-    id("com.github.jk1.dependency-license-report").version("2.0")
+    id("org.jetbrains.kotlin.jvm") version "1.7.0-RC2"  // "1.5.31" // "1.6.21"
+    id("com.github.jk1.dependency-license-report") version "2.0"
 }
 
 // From: https://stackoverflow.com/questions/56921833/kotlin-program-error-no-main-manifest-attribute-in-jar-file/61373175#61373175
@@ -181,7 +182,49 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    //filter {
+        //excludeTestsMatching("*ExpensiveTest")
+    //}
 }
+
+kotlin {
+    sourceSets {
+        //val integrationTest by creating {
+        create("integrationTest") {
+            kotlin.srcDir("src/integrationTest/kotlin")
+            resources.srcDir("src/integrationTest/resources")
+        }
+    }
+}
+
+val integrationTestCompile: Configuration by configurations.creating {
+    extendsFrom(configurations["testImplementation"])
+}
+val integrationTestRuntime: Configuration by configurations.creating {
+    extendsFrom(configurations["testImplementation"])
+}
+
+testSets {
+//    //"integrationTest"()
+    libraries {
+        create("integrationTest")
+    }
+}
+
+task<Test>("integrationTest"){
+    description = "Runs the integration tests"
+    group = "verification"
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+    //mustRunAfter(tasks["check"])
+    useJUnitPlatform()
+}
+
+//tasks {
+//    check {
+//        dependsOn("integrationTest")  // (1)
+//    }
+//}
 
 kover {
     isDisabled = !koverEnableAllReports

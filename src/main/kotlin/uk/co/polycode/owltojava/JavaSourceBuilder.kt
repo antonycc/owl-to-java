@@ -138,8 +138,10 @@ open class JavaSourceBuilder(
             licenceText
         else
             "${comments}\n\n${licenceText}"
-            .replace("\$", "DOLLAR")
+            .escape()
     }
+
+    private fun String.escape() = OwlProperty.escapeForJavaDoc(this)
 
     companion object {
 
