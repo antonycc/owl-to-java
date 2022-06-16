@@ -26,7 +26,6 @@ OWL to Java currently:
 
 # TODO
 
-* Consider progress against GitHub badges e.g. https://github.com/detekt/detekt
 * TODO review
 * Comment audit
 * **Publish: Release 0.1.0 to GitHub packages**
