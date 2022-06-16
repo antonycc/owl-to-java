@@ -1,5 +1,8 @@
 # owl-to-java
 ![build](https://github.com/antonycc/owl-to-java/workflows/Build/badge.svg?branch=main)
+![checks](https://github.com/antonycc/owl-to-java/workflows/Quality%20report/badge.svg?branch=main)
+![commit activity](https://img.shields.io/github/commit-activity/m/antonycc/owl-to-java)
+![last commit](https://img.shields.io/github/last-commit/antonycc/owl-to-java)
 
 OWL to Java generates a Java class model from an ontology defined using the W3C Web Ontology Language (OWL).
 The models are built by taking a specified list of OWL classes and creating Java classes for those OWL classes
