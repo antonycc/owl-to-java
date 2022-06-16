@@ -120,8 +120,8 @@ open class JavaSourceBuilder(
                 //    AnotherSuperclass    anotherSuperclass;
                 filteredJavaSuperclasses
                     .filter { it.resource != superclass.resource }
-                    .map { buildJavaFieldsForAdditionalSuperclasses(it, javaBasePackage, primitivePropertyTypes) }
-                    .flatten()
+                    .map { buildJavaFieldForAdditionalSuperclass(it, javaBasePackage, primitivePropertyTypes) }
+                    //.flatten()
                     .forEach { javaClass.addField(it) }
             }
         }
@@ -155,31 +155,40 @@ open class JavaSourceBuilder(
             "var",
             "val")
 
-        // TODO: Why is this just one added superclass as a field?
-        fun buildJavaFieldsForAdditionalSuperclasses(
+        private var digitToWordMap: Map<Char, String>  = mapOf(
+            '1' to "One",
+            '2' to "Two",
+            '3' to "Three",
+            '4' to "Four",
+            '5' to "Five",
+            '6' to "Six",
+            '7' to "Seven",
+            '8' to "Eight",
+            '9' to "Nine",
+            '0' to "Zero")
+
+        fun buildJavaFieldForAdditionalSuperclass(
             owlSuperclass: RdfsResource,
             javaBasePackage: String,
             primitivePropertyTypes: Map<String, String>
-        ): List<FieldSpec> {
-            val javaSuperclassFields = mutableListOf<FieldSpec>()
-            val superclassOwlClass = OwlClassRef()
-            superclassOwlClass.id = owlSuperclass.resource
+        ): FieldSpec {
             val additionalFieldTypeName = fieldTypeForOwlProperty(
                 javaBasePackage,
-                superclassOwlClass,
+                OwlClassRef().also { it.id = owlSuperclass.resource },
                 primitivePropertyTypes)
             val additionalFieldName = additionalFieldTypeName.toString().split(".").last()
-            if (additionalFieldName.isNotBlank()) {
-                val capitalisedFieldName = additionalFieldName.replaceFirst(
-                    additionalFieldName[0],
-                    additionalFieldName[0].lowercaseChar()
-                )
-                javaSuperclassFields.add(FieldSpec
-                    .builder(additionalFieldTypeName, capitalisedFieldName)
-                    .addModifiers(Modifier.PUBLIC)
-                    .build())
-            }
-            return javaSuperclassFields
+            //return if (additionalFieldName.isNotBlank()) {
+            val capitalisedFieldName = additionalFieldName.replaceFirst(
+                additionalFieldName[0],
+                additionalFieldName[0].lowercaseChar()
+            )
+            return FieldSpec
+                .builder(additionalFieldTypeName, capitalisedFieldName)
+                .addModifiers(Modifier.PUBLIC)
+                .build()
+            //} else {
+            //    null
+            //}
         }
 
         // TODO: Compress into a more functional style
@@ -272,19 +281,11 @@ open class JavaSourceBuilder(
                 .reduce() { name, pathElement -> name.plus(toTitleCase(pathElement)) }
                 .firstDigitToString()
 
-        // TODO: Move to a map
         private fun String.firstDigitToString() = if( this.isNotBlank() && this[0].isDigit() )
-                this
-                    .replace("1","One")
-                    .replace("2","Two")
-                    .replace("3","Three")
-                    .replace("4","Four")
-                    .replace("5","Five")
-                    .replace("6","Six")
-                    .replace("7","Seven")
-                    .replace("8","Eight")
-                    .replace("9","Nine")
-                    .replace("0","Zero")
+                this.replace(
+                    "${this[0]}",
+                    digitToWordMap[this[0]] ?: ""
+                )
             else
                 this
 
