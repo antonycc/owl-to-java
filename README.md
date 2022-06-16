@@ -8,8 +8,11 @@ OWL to Java generates a Java class model from an ontology defined using the W3C 
 The models are built by taking a specified list of OWL classes and creating Java classes for those OWL classes
 and their properties.
 
-Mission statement: Be a useful bridge between ontologies defined using open standards and object models of immediate
+Mission statement:
+```text
+Be a useful bridge between ontologies defined using open standards and object models of immediate
 practical use in applications 
+```
 
 # Done
 
