@@ -54,20 +54,13 @@ open class JavaSourceBuilder(
             logger.debug(e.stackTraceToString())
         }
 
-        // TODO: Add the primary superclass and return the rest as fields, then dedupe with the fields
-        addSuperclasses(owlClass, javaPackage, javaClass)
-
-        javaClass.addField(
-            FieldSpec
-                .builder(String::class.java, "isDefinedBy")
-                .addModifiers(Modifier.PUBLIC)
-                    // TODO: Language resource
-                .addJavadoc("Where to find the definition of the OWL Class used to generate this Java class.")
-                .initializer("\"${owlClass.isDefinedBy.resource}\"")
-                .build()
-        )
+        val (javaSuperclass, additionalSuperclassFields) = buildJavaSuperclasses(owlClass, javaPackage)
+        if(javaSuperclass != null) {
+            javaClass.superclass(javaSuperclass)
+        }
 
         owlProperties
+            .asSequence()
             .map {
                 buildJavaFields(it,
                     lang,
@@ -77,7 +70,17 @@ open class JavaSourceBuilder(
                     prunedPropertyTypes)
             }
             .flatten()
+            .plus(FieldSpec
+                .builder(String::class.java, "isDefinedBy")
+                .addModifiers(Modifier.PUBLIC)
+                // TODO: Language resource
+                .addJavadoc("Where to find the definition of the OWL Class used to generate this Java class.")
+                .initializer("\"${owlClass.isDefinedBy.resource}\"")
+                .build()
+            )
+            .plus(additionalSuperclassFields)
             .distinctBy { it.name }
+            .toList()
             .forEach { javaClass.addField(it) }
 
         return JavaFile.builder(javaPackage, javaClass.build())
@@ -85,46 +88,60 @@ open class JavaSourceBuilder(
             .toString()
     }
 
-    private fun addSuperclasses(
+    // Multiple superclasses are split into separate fields
+    // e.g.
+    // public class ClassWithMultipleSuperclasses extends SelectedSuperclass {
+    //    AlternateSuperclass  alternateSuperclass;
+    //    AnotherSuperclass    anotherSuperclass;
+    private fun buildJavaSuperclasses(
         owlClass: OwlClass,
-        javaPackage: String,
-        javaClass: TypeSpec.Builder
-    ) {
+        javaPackage: String): Pair<ClassName?, List<FieldSpec>> {
         val javaSuperclasses = owlClass.subClassesOf
-        if (!javaSuperclasses.isNullOrEmpty()) {
+        if (javaSuperclasses.isNullOrEmpty()) {
+            return Pair(null, emptyList())
+        }else{
             val filteredJavaSuperclasses = javaSuperclasses
                 .filter { it.resource !in ignoredSuperclasses }
             val superclass = selectSuperclass(desiredClasses, filteredJavaSuperclasses)
-            if (superclass != null) {
-                if (superclass.resource !in primitivePropertyTypes) {
-                    // Pick one superclass to be the Java superclass
-                    val javaSuperclassName = classNameForUri(URI(superclass.resource))
-                    val javaSuperclass = ClassName.get(javaPackage, javaSuperclassName)
-                    javaClass.superclass(javaSuperclass)
-                } else {
-                    // Instead of a superclass, add a field called value matching the superclass primitive
-                    javaClass.addField(
-                        FieldSpec
-                            .builder(ClassName.bestGuess(primitivePropertyTypes[superclass.resource]), "value")
-                            .addModifiers(Modifier.PUBLIC)
-                            // TODO: Language resource
-                            .addJavadoc("The value of what would have been a primitive supertype.")
-                            .build()
-                    )
-                }
-
-                // Multiple superclasses are split into separate fields
-                // e.g.
-                // public class ClassWithMultipleSuperclasses extends SelectedSuperclass {
-                //    AlternateSuperclass  alternateSuperclass;
-                //    AnotherSuperclass    anotherSuperclass;
-                filteredJavaSuperclasses
-                    .filter { it.resource != superclass.resource }
-                    .map { buildJavaFieldForAdditionalSuperclass(it, javaBasePackage, primitivePropertyTypes) }
-                    //.flatten()
-                    .forEach { javaClass.addField(it) }
+            return if (superclass == null) {
+                Pair(null, emptyList())
+            }else{
+                buildAdditionalJavaSuperclasses(superclass, javaPackage, filteredJavaSuperclasses)
             }
         }
+    }
+
+    private fun buildAdditionalJavaSuperclasses(
+        superclass: RdfsResource,
+        javaPackage: String,
+        javaSuperclasses: List<RdfsResource>
+    ): Pair<ClassName?, List<FieldSpec>> {
+        val javaSuperclass = if (superclass.resource !in primitivePropertyTypes) {
+            // Pick one superclass to be the Java superclass
+            ClassName.get(javaPackage, classNameForUri(URI(superclass.resource)))
+        } else {
+            null
+        }
+        val additionalSuperClasses = mutableListOf<FieldSpec>()
+
+        // Instead of a superclass, add a field called value matching the superclass primitive
+        if (javaSuperclass == null) {
+            additionalSuperClasses.add(
+                FieldSpec
+                    .builder(ClassName.bestGuess(primitivePropertyTypes[superclass.resource]), "value")
+                    .addModifiers(Modifier.PUBLIC)
+                    // TODO: Language resource
+                    .addJavadoc("The value of what would have been a primitive supertype.")
+                    .build()
+            )
+        }
+
+        return Pair(
+            javaSuperclass,
+            javaSuperclasses
+                .filter { it.resource != superclass.resource }
+                .map { buildJavaFieldForAdditionalSuperclass(it, javaBasePackage, primitivePropertyTypes) }
+        )
     }
 
     private fun getClassJavaDocEscaped(owlClass: OwlClass): String {
@@ -191,35 +208,35 @@ open class JavaSourceBuilder(
             //}
         }
 
-        // TODO: Compress into a more functional style
+        // Multiple type fields are split into separate fields
+        // e.g.
+        // public class CreativeWork extends Thing {
+        //    Person       creator;
+        //    Organization creatorOrganization;
         fun buildJavaFields(
             owlField: OwlProperty,
-            //javaClass: TypeSpec.Builder,
             lang: String,
             javaBasePackage: String,
             primitivePropertyTypes: Map<String, String>,
             desiredClasses: List<String>,
             prunedPropertyTypes: List<String>
         ): List<FieldSpec> {
-            val javaFields = mutableListOf<FieldSpec>()
             val primaryFieldType: OwlClassRef? = selectType(owlField.fieldTypes, desiredClasses, prunedPropertyTypes)
-            val fieldName = fieldNameForOwlPropertyId(owlField.id)
+            val primaryFieldName = fieldNameForOwlPropertyId(owlField.id)
             val fieldComments = owlField.commentsForOwlProperty(lang)
-            val fieldTypeName = fieldTypeForOwlProperty(javaBasePackage, primaryFieldType, primitivePropertyTypes)
-            javaFields.add(buildJavaField(fieldTypeName, fieldName, fieldComments))
-            // Multiple type fields are split into separate fields
-            // e.g.
-            // public class CreativeWork extends Thing {
-            //    Person       creator;
-            //    Organization creatorOrganization;
-            owlField.fieldTypes
+            return owlField.fieldTypes
                 .filter { it.id != primaryFieldType?.id }
-                .forEach {
+                .map {
                     val additionalFieldTypeName = fieldTypeForOwlProperty(javaBasePackage, it, primitivePropertyTypes)
-                    val additionalFieldName = fieldName + additionalFieldTypeName.toString().split(".").last()
-                    javaFields.add(buildJavaField(additionalFieldTypeName, additionalFieldName, fieldComments))
+                    buildJavaField(
+                        additionalFieldTypeName,
+                        primaryFieldName + additionalFieldTypeName.toString().split(".").last(),
+                        fieldComments)
                 }
-            return javaFields
+                .plus(buildJavaField(
+                    fieldTypeForOwlProperty(javaBasePackage, primaryFieldType, primitivePropertyTypes),
+                    primaryFieldName,
+                    fieldComments))
         }
 
         private fun fieldNameForOwlPropertyId(id: String): String {
