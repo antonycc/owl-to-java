@@ -31,6 +31,7 @@ OWL to Java currently:
 
 * TODO review
 * Comment audit
+* Public API lockdown
 * **Publish: Release 0.1.0 to GitHub packages**
 * Graph DB annotations + graph example
 * Lombok annotations
