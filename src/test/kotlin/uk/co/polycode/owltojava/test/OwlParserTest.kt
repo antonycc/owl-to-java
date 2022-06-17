@@ -74,7 +74,8 @@ internal class OwlParserTest {
             it.classes = this.classes
             it.ignoredPropertyTypes = this.ignoredPropertyTypes
         }
-            .buildClassMap()
+            //.buildClassMap()
+            .buildMapOfClassesToFieldLists(this.classes)
             .filter { it.key.id !in primitivePropertyTypes }
 
         // Validation
@@ -97,7 +98,8 @@ internal class OwlParserTest {
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument)
-            .buildClassMap()
+            //.buildClassMap()
+            .buildMapOfClassesToFieldLists()
             .filter { it.key.id !in primitivePropertyTypes }
 
         // Validation
@@ -121,7 +123,8 @@ internal class OwlParserTest {
             it.ignoredPropertyTypes = this.ignoredPropertyTypes
             it.prunedPropertyTypes = this.prunedPropertyTypes
         }
-            .buildClassMap()
+            //.buildClassMap()
+            .buildMapOfClassesToFieldLists(this.classes)
             .filter { it.key.id !in primitivePropertyTypes }
 
         // Validation
@@ -140,7 +143,8 @@ internal class OwlParserTest {
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument)
-            .buildClassMap()
+            //.buildClassMap()
+            .buildMapOfClassesToFieldLists()
             .filter { it.key.id !in primitivePropertyTypes }
 
         // Validation

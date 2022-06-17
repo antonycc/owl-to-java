@@ -47,7 +47,7 @@ class RegenerateOntologyTaskDelegate(val src: String,
             it.classes = this.classes
             it.ignoredPropertyTypes = this.ignoredPropertyTypes
             it.prunedPropertyTypes = this.prunedPropertyTypes
-        }.buildClassMap()
+        }.buildMapOfClassesToFieldLists(this.classes)
         val ontologyClasses = ontologyClassesWithPrimitives.filter { it.key.id !in primitivePropertyTypes.keys }
         logger.debug { "There are ${ontologyClassesWithPrimitives.size} classes in the classMap with primitives" }
         logger.debug { "There are ${ontologyClasses.size} classes in the classMap (after primitives were filtered)" }

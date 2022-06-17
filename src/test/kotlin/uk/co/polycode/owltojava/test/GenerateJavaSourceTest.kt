@@ -118,7 +118,7 @@ internal class GenerateJavaSourceTest {
 
         // Execution
         val ontologyClasses = owlParserWithSpecifiedClasses
-            .buildClassMap()
+            .buildMapOfClassesToFieldLists()
             .filter { it.key.id !in primitivePropertyTypes.keys }
         val owlExpectedClass = ontologyClasses.keys.firstOrNull { it.id.contains(expectedClassName) }
         val owlExpectedProperties = ontologyClasses[owlExpectedClass]
@@ -152,7 +152,7 @@ internal class GenerateJavaSourceTest {
 
         // Execution
         val ontologyClasses = owlParserWithIgnoredAndPrunedTypes
-            .buildClassMap()
+            .buildMapOfClassesToFieldLists()
             .filter { it.key.id !in primitivePropertyTypes.keys }
         val owlExpectedClass = ontologyClasses.keys.firstOrNull { it.id.contains(expectedClass)}
         val owlExpectedProperties = ontologyClasses[owlExpectedClass]
@@ -177,7 +177,7 @@ internal class GenerateJavaSourceTest {
 
         // Execution
         val ontologyClasses = owlParserWithIgnoredAndPrunedTypes
-            .buildClassMap()
+            .buildMapOfClassesToFieldLists()
             .filter { it.key.id !in primitivePropertyTypes.keys }
         val owlExpectedClass = ontologyClasses.keys.firstOrNull { it.id.contains(expectedClass)}
         val owlExpectedProperties = ontologyClasses[owlExpectedClass]
@@ -202,7 +202,9 @@ internal class GenerateJavaSourceTest {
         }
 
         // Execution
-        val ontologyClasses = owlParserWithLanguage.buildClassMap().filter { it.key.id !in primitivePropertyTypes.keys }
+        val ontologyClasses = owlParserWithLanguage
+            .buildMapOfClassesToFieldLists()
+            .filter { it.key.id !in primitivePropertyTypes.keys }
         val owlExpectedClass = ontologyClasses.keys.firstOrNull { it.id.contains(expectedClass)}
         val owlExpectedProperties = ontologyClasses[owlExpectedClass]
         assertNotNull(owlExpectedClass)
@@ -225,7 +227,9 @@ internal class GenerateJavaSourceTest {
         }
 
         // Execution
-        val ontologyClasses = owlParserWithLanguage.buildClassMap().filter { it.key.id !in primitivePropertyTypes.keys }
+        val ontologyClasses = owlParserWithLanguage
+            .buildMapOfClassesToFieldLists(this.classes)
+            .filter { it.key.id !in primitivePropertyTypes.keys }
         val owlExpectedClass = ontologyClasses.keys.firstOrNull { it.id.contains(expectedClass)}
         val owlExpectedProperties = ontologyClasses[owlExpectedClass]
         assertNotNull(owlExpectedClass)

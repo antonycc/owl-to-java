@@ -93,7 +93,7 @@ internal class SourceWriterTest {
             it.ignoredPropertyTypes = this.ignoredPropertyTypes
             it.prunedPropertyTypes = this.prunedPropertyTypes
         }
-            .buildClassMap()
+            .buildMapOfClassesToFieldLists()
             .filter { it.key.id !in primitivePropertyTypes.keys }
         val javaSourceBuilder = JavaSourceBuilder(javaBasePackage = javaBasePackage).also {
             it.lang = this.lang
@@ -145,7 +145,7 @@ internal class SourceWriterTest {
 
         // Setup
         val ontologyClasses = owlParser
-            .buildClassMap()
+            .buildMapOfClassesToFieldLists()
             .filter { it.key.id !in primitivePropertyTypes.keys }
 
         // Execution
