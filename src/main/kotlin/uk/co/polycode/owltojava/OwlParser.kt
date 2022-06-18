@@ -76,7 +76,6 @@ class OwlParser(
             buildMapOfClassesToFieldLists(newDesiredClassIds, newClassesToFields)
         }
 
-    // TODO: Consider looking up the class from the owlClass domain, instead of filtering all property types
     private fun fieldsForClass(owlClass: OwlClass) //: List<OwlProperty>
         = with(rdfDocument.owlClasses.map { it.id }.toHashSet()) {
             listOf(rdfDocument.owlObjectProperties, rdfDocument.owlDataTypeProperties)

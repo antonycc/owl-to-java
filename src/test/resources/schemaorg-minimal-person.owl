@@ -830,9 +830,7 @@
 		<rdfs:range>
 			<owl:Class>
 				<owl:unionOf rdf:parseType="Collection">
-					<owl:Class rdf:about="https://schema.org/URL"/>
 					<owl:Class rdf:about="https://schema.org/Text"/>
-					<owl:Class rdf:about="https://schema.org/Role"/>
 				</owl:unionOf>
 			</owl:Class>
 		</rdfs:range>
@@ -1337,8 +1335,6 @@
 		<rdfs:range>
 			<owl:Class>
 				<owl:unionOf rdf:parseType="Collection">
-					<owl:Class rdf:about="https://schema.org/Text"/>
-					<owl:Class rdf:about="https://schema.org/URL"/>
 					<owl:Class rdf:about="https://schema.org/Role"/>
 				</owl:unionOf>
 			</owl:Class>
