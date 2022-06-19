@@ -24,40 +24,10 @@ internal class OwlParserTest {
 
     private val srcTestResources = "./src/test/resources"
     private val skeletonOwlFilePath = Paths.get("${srcTestResources}/schemaorg-skeleton.owl")
+
     private val rdfDocument: RdfDocument = with(skeletonOwlFilePath.toFile()){
         Persister().read(RdfDocument::class.java, this, false)
     }
-    private val lang = "en"
-    private val classes = listOf(
-        "https://schema.org/Person",
-        "https://schema.org/City",
-        "https://schema.org/Place",
-        "https://schema.org/CorporationX",
-        "https://schema.org/Project",
-        "https://schema.org/Book",
-        "https://schema.org/Article",
-        "https://example.com/NoLang",
-        "https://schema.org/Fake"
-    )
-    private val primitivePropertyTypes = listOf(
-        "https://schema.org/DataType",
-        "https://schema.org/Text",
-        "https://schema.org/Time",
-        "https://schema.org/DateTime",
-        "https://schema.org/Date",
-        "https://schema.org/URL",
-        "https://schema.org/Integer",
-        "https://schema.org/Float",
-        "https://schema.org/Number",
-        "https://schema.org/Boolean"
-    )
-    private val ignoredPropertyTypes = listOf(
-        "https://schema.org/Role"
-    )
-    private val prunedPropertyTypes = listOf(
-        "https://schema.org/Text",
-        "https://schema.org/URL"
-    )
 
     @Test
     fun testExpectedClassInSkeletonClassMap() {
@@ -70,13 +40,12 @@ internal class OwlParserTest {
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument).also {
-            it.lang = this.lang
-            it.classes = this.classes
-            it.ignoredPropertyTypes = this.ignoredPropertyTypes
+            it.lang = SchemaOrgParameterSet.lang
+            it.classes = SchemaOrgParameterSet.classes
+            it.ignoredPropertyTypes = SchemaOrgParameterSet.ignoredPropertyTypes
         }
-            //.buildClassMap()
-            .buildMapOfClassesToFieldLists(this.classes)
-            .filter { it.key.id !in primitivePropertyTypes }
+            .buildMapOfClassesToFieldLists(SchemaOrgParameterSet.classes)
+            .filter { it.key.id !in SchemaOrgParameterSet.primitivePropertyTypes }
 
         // Validation
         val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size
@@ -98,9 +67,8 @@ internal class OwlParserTest {
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument)
-            //.buildClassMap()
             .buildMapOfClassesToFieldLists()
-            .filter { it.key.id !in primitivePropertyTypes }
+            .filter { it.key.id !in SchemaOrgParameterSet.primitivePropertyTypes }
 
         // Validation
         val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size
@@ -118,14 +86,13 @@ internal class OwlParserTest {
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument).also {
-            it.lang = this.lang
-            it.classes = this.classes
-            it.ignoredPropertyTypes = this.ignoredPropertyTypes
-            it.prunedPropertyTypes = this.prunedPropertyTypes
+            it.lang = SchemaOrgParameterSet.lang
+            it.classes = SchemaOrgParameterSet.classes
+            it.ignoredPropertyTypes = SchemaOrgParameterSet.ignoredPropertyTypes
+            it.prunedPropertyTypes = SchemaOrgParameterSet.prunedPropertyTypes
         }
-            //.buildClassMap()
-            .buildMapOfClassesToFieldLists(this.classes)
-            .filter { it.key.id !in primitivePropertyTypes }
+            .buildMapOfClassesToFieldLists(SchemaOrgParameterSet.classes)
+            .filter { it.key.id !in SchemaOrgParameterSet.primitivePropertyTypes }
 
         // Validation
         val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size
@@ -143,9 +110,8 @@ internal class OwlParserTest {
 
         // Execution
         val ontologyClasses = OwlParser(rdfDocument = rdfDocument)
-            //.buildClassMap()
             .buildMapOfClassesToFieldLists()
-            .filter { it.key.id !in primitivePropertyTypes }
+            .filter { it.key.id !in SchemaOrgParameterSet.primitivePropertyTypes }
 
         // Validation
         val actualNumberOfTargetClasses = ontologyClasses.filter { it.key.id.endsWith(expectedClass) }.size

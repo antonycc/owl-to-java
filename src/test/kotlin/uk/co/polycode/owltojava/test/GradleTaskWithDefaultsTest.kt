@@ -2,11 +2,7 @@ package uk.co.polycode.owltojava.test
 
 import uk.co.polycode.owltojava.*
 import java.io.BufferedReader
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.net.URL
 import java.nio.file.Paths
-import java.time.ZonedDateTime
 import kotlin.test.*
 
 /**
@@ -26,25 +22,13 @@ internal class GradleTaskWithDefaultsTest {
 
     private val srcTestResources = "./src/test/resources"
     private val minimalOwlFilePath = Paths.get("${srcTestResources}/schemaorg-minimal-person.owl")
-    private val javaSourceDirectoryPath = Paths.get("./build/generated-sources-task-with-defaults")
-    private val javaBasePackage = "uk.co.polycode"
-    private val primitivePropertyTypes = mapOf(
-        "https://schema.org/DataType" to Object::class.java.name,
-        "https://schema.org/Text"     to String::class.java.name,
-        "https://schema.org/Time"     to ZonedDateTime::class.java.name,
-        "https://schema.org/DateTime" to ZonedDateTime::class.java.name,
-        "https://schema.org/Date"     to ZonedDateTime::class.java.name,
-        "https://schema.org/URL"      to URL::class.java.name,
-        "https://schema.org/Integer"  to BigInteger::class.java.name,
-        "https://schema.org/Float"    to BigDecimal::class.java.name,
-        "https://schema.org/Number"   to BigDecimal::class.java.name,
-        "https://schema.org/Boolean"  to "java.lang.Boolean", // Boolean::class.java.name, unboxes to boolean.
-    )
+    private val javaSourceDirectoryPath = Paths.get("./build/generated-sources-task")
+
     private val taskDelegateWithDefaults = RegenerateOntologyTaskDelegate(
         src = minimalOwlFilePath.toFile().absolutePath,
         dest = javaSourceDirectoryPath.toFile().absolutePath,
-        javaBasePackage = javaBasePackage).also {
-        it.primitivePropertyTypes = this.primitivePropertyTypes
+        javaBasePackage = SchemaOrgParameterSet.javaBasePackage).also {
+        it.primitivePropertyTypes = SchemaOrgParameterSet.primitivePropertyTypes
         it.regenerateJavaSource()
     }
 

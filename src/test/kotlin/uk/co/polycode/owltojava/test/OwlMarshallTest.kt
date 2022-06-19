@@ -50,5 +50,4 @@ internal class OwlMarshallTest {
         assertTrue { rdfDocument.owlObjectProperties.first().comments.isNotEmpty() }
         assertTrue { rdfDocument.owlObjectProperties.first().isDefinedBy.resource.isNotBlank() }
     }
-
 }
