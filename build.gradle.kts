@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URI
 
 // OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
 // Copyright (C) 2022  Antony Cartwright, Polycode Limited
@@ -112,6 +113,16 @@ publishing {
                     developerConnection.set("scm:git:ssh://github.com/antonycc/owl-to-java.git")
                     url.set("https://github.com/antonycc/owl-to-java")
                 }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = URI("https://maven.pkg.github.com/octocat/hello-world")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }

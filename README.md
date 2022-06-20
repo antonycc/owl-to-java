@@ -57,6 +57,9 @@ OWL to Java currently:
 * **Platform Launch: API based generation and viewer**
 * Kotlin idioms
 * Profiling
+* Non-failing report job and parallel multiple failing check job
+* Auto-fix and submit PR
+* Check and auto accept PR
 * Inheritance by interface (via Lombok, or better in Kotlin?) and aggregation
 * Handling of plurals as collections e.g. Person.parent is a relationship with multiplicity
 * Load configuration set by name e.g. (com.example.OwlToJavaConfigSetSchemaOrg.setTaskConfig(this))
