@@ -28,7 +28,6 @@ class OwlParser(
     var ignoredPropertyTypes: List<String> = mutableListOf(),
     var prunedPropertyTypes: List<String> = mutableListOf()){
 
-    // TODO: Consider an alternative and parameterised fuzzy match to the last 3 characters
     @field:Suppress("MagicNumber")
     private val typeFuzzyMatchLast = 3
 

@@ -1,13 +1,9 @@
 package uk.co.polycode.owltojava.rdf
 
-import com.google.common.base.MoreObjects
 import org.simpleframework.xml.Attribute
 import org.simpleframework.xml.Element
-import org.simpleframework.xml.ElementArray
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.ElementListUnion
-import org.simpleframework.xml.Namespace
-import org.simpleframework.xml.Path
 import org.simpleframework.xml.Root
 import uk.co.polycode.owltojava.owl.OwlClass
 import uk.co.polycode.owltojava.owl.OwlDatatypeProperty

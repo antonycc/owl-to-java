@@ -1,7 +1,5 @@
 package uk.co.polycode.owltojava.owl
 
-import com.google.common.base.MoreObjects
-
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
  * Copyright (C) 2022  Antony Cartwright, Polycode Limited
@@ -15,4 +13,10 @@ import com.google.common.base.MoreObjects
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-open class OwlClassRef : OwlIdRef()
+open class OwlClassRef : OwlIdRef(){
+    fun clone(): OwlClassRef{
+        val new = OwlClassRef()
+        new.id = this.id
+        return new
+    }
+}

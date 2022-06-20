@@ -61,7 +61,6 @@ internal class SourceWriterTest {
 
         // Execution
         JavaSourceWriter().writeClassMapAsJavaSource(
-            javaSourceDirectoryPath.toFile().absolutePath,
             javaSourceDirectoryPath.toFile(),
             ontologyClasses,
             javaSourceBuilder
@@ -104,7 +103,6 @@ internal class SourceWriterTest {
 
         // Execution
         JavaSourceWriter().writeClassMapAsJavaSource(
-            javaSourceDirectoryPath.toFile().absolutePath,
             javaSourceDirectoryPath.toFile(),
             ontologyClasses,
             javaSourceBuilder

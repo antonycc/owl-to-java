@@ -25,8 +25,8 @@ internal class GradleTaskTest {
     private val javaSourceDirectoryPath = Paths.get("./build/generated-sources-task")
 
     private val taskDelegate = RegenerateOntologyTaskDelegate(
-        src = minimalOwlFilePath.toFile().absolutePath,
-        dest = javaSourceDirectoryPath.toFile().absolutePath,
+        src = minimalOwlFilePath.toFile(),
+        dest = javaSourceDirectoryPath.toFile(),
         javaBasePackage = SchemaOrgParameterSet.javaBasePackage)
         .also {
             it.lang = SchemaOrgParameterSet.lang

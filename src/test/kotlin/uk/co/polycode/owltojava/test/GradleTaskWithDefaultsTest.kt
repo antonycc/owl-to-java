@@ -22,11 +22,11 @@ internal class GradleTaskWithDefaultsTest {
 
     private val srcTestResources = "./src/test/resources"
     private val minimalOwlFilePath = Paths.get("${srcTestResources}/schemaorg-minimal-person.owl")
-    private val javaSourceDirectoryPath = Paths.get("./build/generated-sources-task")
+    private val javaSourceDirectoryPath = Paths.get("./build/generated-sources-with-defaults")
 
     private val taskDelegateWithDefaults = RegenerateOntologyTaskDelegate(
-        src = minimalOwlFilePath.toFile().absolutePath,
-        dest = javaSourceDirectoryPath.toFile().absolutePath,
+        src = minimalOwlFilePath.toFile(),
+        dest = javaSourceDirectoryPath.toFile(),
         javaBasePackage = SchemaOrgParameterSet.javaBasePackage).also {
         it.primitivePropertyTypes = SchemaOrgParameterSet.primitivePropertyTypes
         it.regenerateJavaSource()

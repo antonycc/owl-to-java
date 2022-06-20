@@ -3,10 +3,6 @@ package uk.co.polycode.owltojava.owl
 import com.google.common.base.MoreObjects
 import org.simpleframework.xml.Attribute
 import org.simpleframework.xml.Element
-import org.simpleframework.xml.ElementList
-import org.simpleframework.xml.Path
-import org.simpleframework.xml.Root
-import org.simpleframework.xml.Text
 
 /**
  * OWL to Java generates Source Code from the W3C Web Ontology Language (OWL)
@@ -37,9 +33,6 @@ class OwlOntology {
 
     override fun toString() =
         MoreObjects.toStringHelper(this.javaClass)
-//            .add("id", id)
             .add("label", label)
-//            .add("owlVersionInfo", owlVersionInfo)
-//            .add("owlVersionModified", owlVersionModified)
             .toString()
 }

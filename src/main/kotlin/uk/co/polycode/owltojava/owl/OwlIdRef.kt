@@ -1,6 +1,5 @@
 package uk.co.polycode.owltojava.owl
 
-import com.google.common.base.MoreObjects
 import org.simpleframework.xml.Attribute
 
 /**

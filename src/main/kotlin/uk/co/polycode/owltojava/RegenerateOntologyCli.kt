@@ -2,6 +2,7 @@ package uk.co.polycode.owltojava
 
 import mu.KotlinLogging
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 
 private val logger = KotlinLogging.logger {}
 
@@ -20,7 +21,6 @@ private val logger = KotlinLogging.logger {}
  */
 class RegenerateOntologyCli {
 
-    // TODO read parameters from command line
     var lang = "en"
     var src: String = "schemaorg.owl"
     var dest: String = ""
@@ -37,9 +37,9 @@ class RegenerateOntologyCli {
         logger.info("OWL to Java with args: ${args}")
         logger.info("Regenerating ontology from ${src} to ${dest} with base package ${javaBasePackage}")
 
-        val (_, ontologyClasses) = RegenerateOntologyTaskDelegate(
-            src = src,
-            dest = dest,
+        val ontologyClasses = RegenerateOntologyTaskDelegate(
+            src = File(src),
+            dest = File(dest),
             javaBasePackage = javaBasePackage)
             .also {
                 it.lang = this.lang

@@ -19,4 +19,10 @@ open class RdfsResource {
 
     @field:Attribute(name = "resource", required = true)
     lateinit var resource: String
+
+    fun clone(): RdfsResource {
+        val new = RdfsResource()
+        new.resource = this.resource
+        return new
+    }
 }

@@ -2,6 +2,7 @@ package uk.co.polycode.owltojava
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -22,13 +23,11 @@ import java.io.File
  */
 abstract class RegenerateOntologyTask : DefaultTask() {
 
-    // TODO: Consider using InputFile
-    @get:Input
-    abstract var src: String
+    @get:InputFile
+    abstract var src: File
 
-    // TODO: Consider using InputDir
-    @get:Input
-    abstract var dest: String
+    @get:InputFile
+    abstract var dest: File
 
     @get:Input
     abstract var javaBasePackage: String
@@ -69,7 +68,7 @@ abstract class RegenerateOntologyTask : DefaultTask() {
     fun regenerate() {
         logger.info("Regenerating ontology from $src to $dest with base package $javaBasePackage")
 
-        val (latestOutputDir, ontologyClasses) = RegenerateOntologyTaskDelegate(
+        val ontologyClasses = RegenerateOntologyTaskDelegate(
             src = src,
             dest = dest,
             javaBasePackage = javaBasePackage)
@@ -83,11 +82,10 @@ abstract class RegenerateOntologyTask : DefaultTask() {
                 it.ignoredSuperclasses = this.ignoredSuperclasses ?: it.ignoredSuperclasses
             }
             .regenerateJavaSource()
-        outputDir = latestOutputDir
+        outputDir = dest
 
         val classLabels = ontologyClasses.keys.map { it.labels }
         logger.info("Created ${ontologyClasses.size} Java classes for the following " +
                     "${classLabels.size} OWL Ontology classes (by label): ${classLabels}")
     }
-
  }

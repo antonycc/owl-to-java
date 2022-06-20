@@ -24,5 +24,11 @@ class RdfsText {
     @field:Text(required = true)
     lateinit var text: String
 
+    fun clone(): RdfsText {
+        val new = RdfsText()
+        new.lang = this.lang
+        new.text = this.text
+        return new
+    }
     override fun toString() = "${lang}:${text}"
 }

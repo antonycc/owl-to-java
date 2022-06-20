@@ -69,14 +69,12 @@ abstract class OwlProperty : OwlIdRef() {
     fun withFieldTypes(fieldTypes: List<OwlClassRef>): OwlProperty{
         val new: OwlProperty = this::class.createInstance()
         new.id = super.id
-        new.labels = this.labels.map { it }
-        new.comments = this.comments.map { it }
-        new.supersededBy = this.supersededBy
-        new.isDefinedBy = this.isDefinedBy
-        new.domain = this.domain
-        //new.domain.classUnion.unionOf.classes = this.domain.classUnion.unionOf.classes.map { it }
-        new.range = this.range
-        //new.range.classUnion.unionOf.classes = this.range.classUnion.unionOf.classes.map { it }
+        new.labels = this.labels.map { it.clone() }
+        new.comments = this.comments.map { it.clone() }
+        new.supersededBy = this.supersededBy.map { it.clone() }.toMutableList()
+        new.isDefinedBy = this.isDefinedBy.clone()
+        new.domain = this.domain.map { it.clone() }.toMutableList()
+        new.range = this.range.map { it.clone() }.toMutableList()
         new.fieldTypes = fieldTypes
         return new
     }
@@ -91,16 +89,12 @@ abstract class OwlProperty : OwlIdRef() {
 
     override fun toString() =
         MoreObjects.toStringHelper(this.javaClass)
- //           .add("id", id)
             .add("labels", labels)
- //           .add("comments", comments)
- //           .add("isDefinedBy", isDefinedBy)
             .add("domain", domain)
             .add("range", range)
             .toString()
 
     companion object {
-        //fun escapeForJavaDoc(s: String) = s.replace("\$", "DOLLAR")
         fun escapeForJavaDoc(s: String) = s.replace("\$", "USD")
     }
 

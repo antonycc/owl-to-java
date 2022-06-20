@@ -31,7 +31,7 @@ open class OwlClass : OwlClassRef() {
     @field:Element(name = "isDefinedBy", required = true)
     lateinit var isDefinedBy: RdfsResource
 
-    // http://schema.org/Thing - Does not have a sub-class
+    // http://schema.org/Thing - Does not have a subclass
     @field:ElementListUnion(
         ElementList(entry = "subClassOf", type=RdfsResource::class, inline = true, required = false)
     )
@@ -39,10 +39,6 @@ open class OwlClass : OwlClassRef() {
 
     override fun toString() =
         MoreObjects.toStringHelper(this.javaClass)
-//            .add("id", id.toString())
             .add("labels", labels)
-//            .add("comments", comments)
-//            .add("isDefinedBy", isDefinedBy)
-//            .add("subClassesOf", subClassesOf)
             .toString().plus("\n")
 }

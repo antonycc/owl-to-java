@@ -38,11 +38,27 @@ class OwlClassContainer {
     class OwlClassUnion {
         @field:Element(name = "unionOf", required = true)
         lateinit var unionOf: OwlUnionOf
+        fun clone(): OwlClassUnion{
+            val new = OwlClassUnion()
+            new.unionOf = this.unionOf.clone()
+            return new
+        }
     }
 
     class OwlUnionOf {
         @field:ElementListUnion(ElementList(entry = "Class", type=OwlClassRef::class, inline = true))
         lateinit var classes: List<OwlClassRef>
+        fun clone(): OwlUnionOf{
+            val new = OwlUnionOf()
+            new.classes = this.classes.map { it.clone() }
+            return new
+        }
+    }
+
+    fun clone(): OwlClassContainer{
+        val new = OwlClassContainer()
+        new.classUnion = this.classUnion.clone()
+        return new
     }
 
     override fun toString() =
@@ -57,8 +73,4 @@ class OwlClassContainer {
                     .contains(it.id)
             }
             .toString()
-        //return MoreObjects.toStringHelper(this.javaClass)
-        //    .add("classes", classUnion.unionOf.classes)
-        //    .toString()
-    //}
 }

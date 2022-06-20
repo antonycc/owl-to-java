@@ -24,46 +24,37 @@ private val logger = KotlinLogging.logger {}
 open class JavaSourceWriter {
 
     fun outputJavaClasses(
-        outputDirFilepath: String,
+        latestOutputDir: File,
         ontologyClasses: Map<OwlClass, List<OwlProperty>>,
         javaSourceBuilder: JavaSourceBuilder
-    ): File? {
-        val latestOutputDir =
-            if (outputDirFilepath.isNotBlank() && outputDirFilepath != "INFO")
-                File(outputDirFilepath)
-            else
-                null
-        if (latestOutputDir != null) {
-            writeClassMapAsJavaSource(outputDirFilepath, latestOutputDir,ontologyClasses, javaSourceBuilder)
+    ) = if (latestOutputDir.name != "INFO") {
+            writeClassMapAsJavaSource(latestOutputDir,ontologyClasses, javaSourceBuilder)
         } else { //Log
             ontologyClasses
                 .filter { it.key.id.endsWith("Place") }
                 .forEach { logger.info(javaSourceBuilder.build(it.key, it.value)) }
         }
-        return latestOutputDir
-    }
 
     fun writeClassMapAsJavaSource(
-        dest: String,
         outputDir: File,
         ontologyClasses: Map<OwlClass, List<OwlProperty>>,
         javaSourceBuilder: JavaSourceBuilder
     ) {
-        logger.info("Writing to $dest")
+        logger.info("Writing to ${outputDir.absolutePath}")
         if (!outputDir.exists()) outputDir.mkdir()
         ontologyClasses
             .forEach {
                 val javaSource = javaSourceBuilder.build(it.key, it.value)
                 val javaFullyQualifiedName =
                     JavaSourceBuilder.fullyQualifiedNameForPackageAndUri(javaSourceBuilder.javaBasePackage, it.key)
-                val packageDir = appendAndCreatePackageDir(dest, javaFullyQualifiedName)
+                val packageDir = appendAndCreatePackageDir(outputDir, javaFullyQualifiedName)
                 File("${packageDir}${JavaSourceBuilder.classNameForUri(URI(it.key.id))}.java")
                     .printWriter().use { out -> out.println(javaSource) }
             }
     }
 
-    private fun appendAndCreatePackageDir(basePath: String, javaFullyQualifiedName: String): String {
-        var packageDir = basePath.plus(File.separator)
+    private fun appendAndCreatePackageDir(basePath: File, javaFullyQualifiedName: String): String {
+        var packageDir = basePath.absolutePath.plus(File.separator)
         if ("." in javaFullyQualifiedName) {
             packageDir += javaFullyQualifiedName
                 .subSequence(0, javaFullyQualifiedName.lastIndexOf("."))

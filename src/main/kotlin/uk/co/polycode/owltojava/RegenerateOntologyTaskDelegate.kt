@@ -23,8 +23,8 @@ private val logger = KotlinLogging.logger {}
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * Mozilla Public License, v. 2.0 for more details.
  */
-class RegenerateOntologyTaskDelegate(val src: String,
-                                     val dest: String,
+class RegenerateOntologyTaskDelegate(val src: File,
+                                     val dest: File,
                                      val javaBasePackage: String) {
     var lang: String = "en"
     var licenceText: String = ""
@@ -34,11 +34,10 @@ class RegenerateOntologyTaskDelegate(val src: String,
     var prunedPropertyTypes: List<String> = listOf()
     var ignoredSuperclasses: List<String> = listOf()
 
-    fun regenerateJavaSource(): Pair<File?, Map<OwlClass, List<OwlProperty>>> {
+    fun regenerateJavaSource(): Map<OwlClass, List<OwlProperty>> {
 
-        val owlFile = File(src)
         val serializer: Serializer = Persister()
-        val rdfDocument = serializer.read(RdfDocument::class.java, owlFile, false)
+        val rdfDocument = serializer.read(RdfDocument::class.java, src, false)
         logger.info { "Read RDF Document with id ${rdfDocument.id} from ${src}" }
         logger.debug { "RDF Document has ${rdfDocument.owlClasses.size} classes" }
 
@@ -63,8 +62,8 @@ class RegenerateOntologyTaskDelegate(val src: String,
         }
 
         val javaSourceWriter = JavaSourceWriter()
-        val outputDir = javaSourceWriter.outputJavaClasses(dest, ontologyClasses, javaSourceBuilder)
-        logger.info { "Java source written to ${outputDir?.absolutePath ?: dest}" }
-        return Pair(outputDir, ontologyClasses)
+        javaSourceWriter.outputJavaClasses(dest, ontologyClasses, javaSourceBuilder)
+        logger.info { "Java source written to ${dest}" }
+        return ontologyClasses
     }
 }

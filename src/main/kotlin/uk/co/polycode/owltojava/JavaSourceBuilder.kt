@@ -73,7 +73,6 @@ open class JavaSourceBuilder(
             .plus(FieldSpec
                 .builder(String::class.java, "isDefinedBy")
                 .addModifiers(Modifier.PUBLIC)
-                // TODO: Language resource
                 .addJavadoc("Where to find the definition of the OWL Class used to generate this Java class.")
                 .initializer("\"${owlClass.isDefinedBy.resource}\"")
                 .build()
@@ -130,7 +129,6 @@ open class JavaSourceBuilder(
                 FieldSpec
                     .builder(ClassName.bestGuess(primitivePropertyTypes[superclass.resource]), "value")
                     .addModifiers(Modifier.PUBLIC)
-                    // TODO: Language resource
                     .addJavadoc("The value of what would have been a primitive supertype.")
                     .build()
             )
@@ -194,7 +192,6 @@ open class JavaSourceBuilder(
                 OwlClassRef().also { it.id = owlSuperclass.resource },
                 primitivePropertyTypes)
             val additionalFieldName = additionalFieldTypeName.toString().split(".").last()
-            //return if (additionalFieldName.isNotBlank()) {
             val capitalisedFieldName = additionalFieldName.replaceFirst(
                 additionalFieldName[0],
                 additionalFieldName[0].lowercaseChar()
@@ -203,9 +200,6 @@ open class JavaSourceBuilder(
                 .builder(additionalFieldTypeName, capitalisedFieldName)
                 .addModifiers(Modifier.PUBLIC)
                 .build()
-            //} else {
-            //    null
-            //}
         }
 
         // Multiple type fields are split into separate fields
@@ -309,5 +303,4 @@ open class JavaSourceBuilder(
         fun toTitleCase(pathElement: String) =
             pathElement.lowercase().replaceFirstChar { it.uppercase() }
     }
-
 }

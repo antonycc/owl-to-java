@@ -29,9 +29,6 @@ OWL to Java currently:
 
 # TODO
 
-* TODO review
-* Comment audit
-* Public API lockdown
 * **Publish: Release 0.1.0 to GitHub packages**
 * Graph DB annotations + graph example
 * Lombok annotations
@@ -64,7 +61,10 @@ OWL to Java currently:
 * Handling of plurals as collections e.g. Person.parent is a relationship with multiplicity
 * Load configuration set by name e.g. (com.example.OwlToJavaConfigSetSchemaOrg.setTaskConfig(this))
 * Load configuration from Kotlin Script: https://kotlinexpertise.com/run-kotlin-scripts-from-kotlin-programs/
-* Extend one schema with another
+* Read multiple files (as an overlay)
+* Pull strings into a multi-lingual template resource
+* Add a parameterised fuzzy match (regex) instead of the OwlParser's match of the last 3 characters
+* Extend one schema with another (by supporting mappings between schemas)
 * @since versioned annotation on tests and auto-generated version history to CHANGELOG.md
 * Review approach to guidance and help used here: https://github.com/researchgate/gradle-release
 
