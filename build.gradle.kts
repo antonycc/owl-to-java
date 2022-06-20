@@ -119,7 +119,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = URI("https://maven.pkg.github.com/octocat/hello-world")
+            url = URI("https://maven.pkg.github.com/antonycc/owl-to-java")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
