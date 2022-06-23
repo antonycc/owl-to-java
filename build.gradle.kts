@@ -74,7 +74,7 @@ afterEvaluate {
 // ./gradlew incrementVersion --versionIncrementType=PATCH
 // ./gradlew printVersion -Psnapshot=false
 group = "co.uk.polycode"
-version = "0.0.9-SNAPSHOT"
+version = "0.0.10-SNAPSHOT"
 
 // See: https://docs.gradle.org/current/userguide/publishing_maven.html
 // ./gradlew build publishToMavenLocal
