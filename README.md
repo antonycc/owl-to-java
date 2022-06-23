@@ -22,6 +22,7 @@ OWL to Java currently:
 * Generates Java source from an OWL ontology in a local file.
 * Runs as a Gradle Task
 * Creates Java Source that compiles
+* Publish: Release 0.1.0 to GitHub packages
 
 # Bugs
 
@@ -29,7 +30,6 @@ OWL to Java currently:
 
 # TODO
 
-* **Publish: Release 0.1.0 to GitHub packages**
 * Graph DB annotations + graph example
 * Lombok annotations
 * Graphical viewer + example
